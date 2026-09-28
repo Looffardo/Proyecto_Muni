@@ -1,0 +1,180 @@
+/* ========================= 
+   ESTRUCTURA GENERAL 
+========================= */ 
+ 
+.home-page { 
+  width: 100%; 
+  min-height: 100vh; 
+  display: flex; 
+  flex-direction: column; 
+} 
+ 
+.home-content { 
+  flex: 1; 
+  width: 100%; 
+  max-width: 1200px; 
+  margin: 0 auto; 
+  padding: 40px; 
+} 
+ 
+/* ========================= 
+   NAVBAR 
+========================= */ 
+ 
+.navbar { 
+  width: 100%; 
+  max-width: 100%; 
+  min-height: 70px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  gap: 30px; 
+  padding: 0 40px; 
+  border-bottom: 1px solid #ddd; 
+  background-color: white; 
+} 
+ 
+.navbar-logo { 
+  flex-shrink: 0; 
+} 
+ 
+.navbar-logo h2 { 
+  margin: 0; 
+} 
+ 
+.navbar-links { 
+  flex: 1; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 30px; 
+} 
+ 
+.navbar-links a { 
+  color: #222; 
+  text-decoration: none; 
+} 
+ 
+.navbar-links a:hover { 
+  text-decoration: underline; 
+} 
+ 
+.navbar-user { 
+  flex-shrink: 0; 
+} 
+ 
+.navbar-user button { 
+  padding: 10px 16px; 
+  cursor: pointer; 
+} 
+ 
+/* ========================= 
+   FOOTER 
+========================= */ 
+ 
+.footer { 
+  width: 100%; 
+  max-width: 100%; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: flex-start; 
+  gap: 30px; 
+  padding: 30px 40px; 
+  border-top: 1px solid #ddd; 
+  background-color: #f7f7f7; 
+} 
+ 
+.footer h3 { 
+  margin-top: 0; 
+} 
+ 
+/* ========================= 
+   MAPA 
+========================= */ 
+ 
+.map-page { 
+  width: 100%; 
+} 
+ 
+.map-container { 
+  width: 100%; 
+  height: 70vh; 
+  margin-top: 20px; 
+} 
+ 
+.leaflet-map { 
+  width: 100%; 
+  height: 100%; 
+  border-radius: 12px; 
+} 
+ 
+/* ========================= 
+   TABLET 
+========================= */ 
+ 
+@media (max-width: 1024px) { 
+ 
+  .navbar { 
+    padding: 0 24px; 
+    gap: 20px; 
+  } 
+ 
+  .navbar-links { 
+    gap: 16px; 
+  } 
+ 
+  .home-content { 
+    padding: 30px 24px; 
+  } 
+ 
+  .footer { 
+    padding: 24px; 
+  } 
+} 
+ 
+/* ========================= 
+   MOBILE 
+========================= */ 
+ 
+@media (max-width: 768px) { 
+ 
+  .navbar { 
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 15px; 
+    padding: 16px 20px; 
+  } 
+ 
+  .navbar-logo { 
+    width: 100%; 
+  } 
+ 
+  .navbar-links { 
+    width: 100%; 
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 10px; 
+  } 
+ 
+  .navbar-user { 
+    width: 100%; 
+  } 
+ 
+  .navbar-user button { 
+    width: 100%; 
+  } 
+ 
+  .home-content { 
+    padding: 24px 16px; 
+  } 
+ 
+  .footer { 
+    flex-direction: column; 
+    gap: 20px; 
+    padding: 24px 20px; 
+  }
+
+  .map-container { 
+    height: 60vh; 
+  } 
+}
