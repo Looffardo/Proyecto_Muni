@@ -1,9 +1,16 @@
 import { Link } from "react-router-dom";
+import logoPenalolen from "../../assets/logos/logo-penalolen.png";
 
 function Navbar() {
   return (
     <nav className="navbar">
-      <div className="navbar-logo">
+      <div className="navbar-brand">
+        <img
+          src={logoPenalolen}
+          alt="Municipalidad de Peñalolén"
+          className="navbar-logo-img"
+        />
+
         <h2>Solicitudes Barriales</h2>
       </div>
 

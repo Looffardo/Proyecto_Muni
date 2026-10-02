@@ -39,6 +39,7 @@ cd prototipo_ing_software
 ### 2. Instalar dependencias del backend
 
 ```bash
+cd prototipo_ing_software
 cd backend
 npm install
 ```
@@ -74,6 +75,7 @@ MongoDB conectado correctamente
 Abrir otra terminal y ejecutar:
 
 ```bash
+cd prototipo_ing_software
 cd frontend
 npm install
 ```
