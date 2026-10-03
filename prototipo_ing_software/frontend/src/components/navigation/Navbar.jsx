@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
+import logoPenalolen from "../../assets/logos/logo-penalolen.png";
 
 function Navbar() {
   const { user, loading, logout } = useAuth();
@@ -24,7 +25,13 @@ function Navbar() {
   }
   return (
     <nav className="navbar">
-      <div className="navbar-logo">
+      <div className="navbar-brand">
+        <img
+          src={logoPenalolen}
+          alt="Municipalidad de Peñalolén"
+          className="navbar-logo-img"
+        />
+
         <h2>Solicitudes Barriales</h2>
       </div>
 
