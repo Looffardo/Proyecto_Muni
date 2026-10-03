@@ -1,6 +1,27 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
 
 function Navbar() {
+  const { user, loading, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function handleLogout() {
+    setBusy(true);
+    setError("");
+
+    try {
+      await logout();
+      navigate("/login");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
   return (
     <nav className="navbar">
       <div className="navbar-logo">
@@ -15,7 +36,24 @@ function Navbar() {
       </div>
 
       <div className="navbar-user">
-        <button>Mi cuenta</button>
+        {loading ? (
+          <span>Comprobando sesión…</span>
+        ) : user ? (
+          <>
+            <Link to="/cuenta">Mi cuenta</Link>
+
+            <button onClick={handleLogout} disabled={busy}>
+              {busy ? "Saliendo…" : "Cerrar sesión"}
+            </button>
+          </>
+        ) : (
+          <>
+            <Link to="/login">Iniciar sesión</Link>
+            <Link to="/registro">Registrarse</Link>
+          </>
+        )}
+
+        {error && <p role="alert">{error}</p>}
       </div>
     </nav>
   );

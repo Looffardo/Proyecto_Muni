@@ -3,7 +3,7 @@
 El proyecto se divide en `frontend` y `backend`.
 
 ```text
-prototipo_capstone/
+prototipo_capstone/ #Nota de Looff: Como que capstone?!? 0_o
 ├── backend/
 │   └── src/
 │       ├── config/        # Configuración y conexión a BD
@@ -109,3 +109,7 @@ node_modules/
 ```
 
 Esto evita subir credenciales y dependencias innecesarias al repositorio.
+
+# Dependencias necesarias
+
+npm install express@5.2.1 express-session@1.19.0 connect-mongo@6.0.0 bcryptjs@3.0.3 express-rate-limit@8.7.0
