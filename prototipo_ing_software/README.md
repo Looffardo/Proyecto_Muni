@@ -112,6 +112,14 @@ node_modules/
 
 Esto evita subir credenciales y dependencias innecesarias al repositorio.
 
-# Dependencias necesarias
+# Session Secret
 
-npm install express@5.2.1 express-session@1.19.0 connect-mongo@6.0.0 bcryptjs@3.0.3 express-rate-limit@8.7.0
+Ejecuten en el terminal una vez:
+
+node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
+
+el resultado de ese comando lo añaden al .env del backend asi:
+
+SESSION_SECRET=RESULTADO_DEL_COMANDO
+PORT=3000
+FRONTEND_ORIGIN=http://localhost:5173
