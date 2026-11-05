@@ -28,6 +28,23 @@ function validateCredentials(body, registering = false) {
   const name =
     typeof body?.name === "string" ? body.name.trim() : "";
 
+  const role = 
+    typeof body?.role === "string" ? body.role.trim() : "";
+
+  const allowedRoles = [
+  "Tránsito",
+  "Espacios Públicos",
+  "Inspección",
+  "Seguridad Humana",
+  "Deportes",
+  "DIDECO",
+  "Jurídico",
+  "DOM",
+  "SECPLA",
+  "Delegación Peñalolén Alto",
+  "GESCOM",
+];
+
   if (
     email.length > 254 ||
     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -57,13 +74,20 @@ function validateCredentials(body, registering = false) {
     );
   }
 
-  return { email, password, name };
+  if (registering && !allowedRoles.includes(role)) {
+    throw Object.assign(
+      new Error("Rol inválido."),
+      { status: 400 }
+    );
+  }
+
+  return { email, password, name, role };
 }
 
 // Registro y autenticación de vecinos
 
 export async function registerUser(body) {
-  const { name, email, password } = validateCredentials(body, true);
+  const { name, email, password, role } = validateCredentials(body, true);
 
   const passwordHash = await bcrypt.hash(password, 12);
 
@@ -71,11 +95,11 @@ export async function registerUser(body) {
     name,
     email,
     passwordHash,
-    role: "vecino",
+    role,
   });
 }
 
-// Login de vecinos
+// Login de usuario
 
 export async function authenticateUser(body) {
   const { email, password } = validateCredentials(body);

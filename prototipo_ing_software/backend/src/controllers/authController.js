@@ -4,8 +4,6 @@ import {
   publicUser,
 } from "../services/authService.js";
 
-
-
 async function startSession(req, user) {
   await new Promise((resolve, reject) => {
     req.session.regenerate((error) => {

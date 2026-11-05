@@ -15,6 +15,7 @@ export default function AuthForm({ register = false }) {
     name: "",
     email: "",
     password: "",
+    role: "",
   });
 
   const [confirmation, setConfirmation] = useState("");
@@ -67,7 +68,7 @@ export default function AuthForm({ register = false }) {
 
           <p>
             {register
-              ? "Regístrate como vecino de Peñalolén."
+              ? "Regístrate"
               : "Ingresa con tu correo y contraseña."}
           </p>
 
@@ -118,6 +119,20 @@ export default function AuthForm({ register = false }) {
                   required
                 />
               </label>
+
+              <select name="role" value={fields.role} onChange={change} required>
+                <option value="Tránsito">Tránsito</option>
+                <option value="Espacios Públicos">Espacios Públicos</option>
+                <option value="Inspección">Inspección</option>
+                <option value="Seguridad Humana">Seguridad Humana</option>
+                <option value="Deportes">Deportes</option>
+                <option value="DIDECO">DIDECO</option>
+                <option value="Jurídico">Jurídico</option>
+                <option value="DOM">DOM</option>
+                <option value="SECPLA">SECPLA</option>
+                <option value="Delegación Peñalolén Alto">Delegación Peñalolén Alto</option>
+                <option value="GESCOM">GESCOM</option>
+              </select>
 
               {register && (
                 <>

@@ -22,8 +22,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["vecino", "admin"],
-      default: "vecino",
+      enum: ["Tránsito", "Espacios Públicos", "Inspección", "Seguridad Humana", "Deportes", "DIDECO", "Jurídico", "DOM", "SECPLA", "Delegación Peñalolén Alto","GESCOM"]
     },
   },
   { timestamps: true }
