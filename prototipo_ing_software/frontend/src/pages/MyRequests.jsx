@@ -145,6 +145,36 @@ function RequestDetail({ request }) {
             <strong>{request.location}</strong>
           </div>
 
+          <div>
+            <span>Tipo de solicitud</span>
+            <strong>{request.type}</strong>
+          </div>
+
+          <div>
+            <span>Fuente</span>
+            <strong>{request.source || "No informado"}</strong>
+          </div>
+
+          <div>
+            <span>Compromiso del alcalde</span>
+            <strong>{request.mayorCommitment ? "Sí" : "No"}</strong>
+          </div>
+
+          <div>
+            <span>Gestor responsable</span>
+            <strong>{request.manager || "No informado"}</strong>
+          </div>
+
+          <div>
+            <span>Organización o persona comprometida</span>
+            <strong>{request.organization || "No informado"}</strong>
+          </div>
+
+          <div>
+            <span>Macrosector</span>
+            <strong>{request.macroSector || "No informado"}</strong>
+          </div>
+
         </div>
 
         <div className="request-detail-description">
