@@ -1,6 +1,7 @@
 import express from "express";
 import session from "express-session";
 import authRoutes from "./routes/authRoutes.js";
+import requestsRoutes from "./routes/requestsRoutes.js";
 
 // Configuración de la aplicación Express
 
@@ -62,6 +63,7 @@ export default function createApp({
   );
 
   app.use("/api/auth", authRoutes);
+  app.use("/api/requests", requestsRoutes);
 
   app.use("/api", (_req, res) => {
     res.status(404).json({ message: "Ruta no encontrada." });

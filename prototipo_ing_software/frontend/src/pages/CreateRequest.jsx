@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import Navbar from "../components/navigation/Navbar";
 import Footer from "../components/navigation/Footer";
+import { createRequest } from "../api/requestsApi";
 
 import "../styles/create-request.css";
 
@@ -30,8 +31,10 @@ const TIPOS = [
 
 const FUENTES = [
   "Terreno",
+  "Caminatas Nocturnas",
   "Red social",
   "Reunión",
+  "Audiencias",
   "Solicitud Concejal",
   "Correo",
   "Otro",
@@ -52,6 +55,9 @@ export default function CreateRequest() {
   });
 
   const [photo, setPhoto] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [createdId, setCreatedId] = useState("");
 
   const today = new Date().toLocaleDateString("es-CL");
 
@@ -85,6 +91,8 @@ export default function CreateRequest() {
     });
 
     setPhoto(null);
+    setError("");
+    setCreatedId("");
 
     const photoInput =
       document.getElementById("request-photo");
@@ -94,11 +102,23 @@ export default function CreateRequest() {
     }
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
-    // Pendiente:
-    // Enviar los datos al backend cuando esté disponible.
+    setSubmitting(true);
+    setError("");
+    setCreatedId("");
+
+    try {
+      const { request } = await createRequest(form);
+
+      handleClear();
+      setCreatedId(request.id);
+    } catch (submitError) {
+      setError(submitError.message);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -375,6 +395,7 @@ export default function CreateRequest() {
               <select
                 id="request-source"
                 name="source"
+                required
                 value={form.source}
                 onChange={handleChange}
               >
@@ -440,18 +461,30 @@ export default function CreateRequest() {
               <button
                 type="submit"
                 className="request-submit-button"
-                disabled
-                title="Disponible al conectar el backend"
+                disabled={submitting}
+                aria-busy={submitting}
               >
-                Publicar solicitud
+                {submitting ? "Publicando…" : "Publicar solicitud"}
               </button>
 
             </div>
 
             <p className="request-form-note">
-              La publicación estará disponible cuando
-              el formulario se conecte con el backend.
+              La fotografía todavía no se guarda
+              junto con la solicitud.
             </p>
+
+            {error && (
+              <p className="request-form-note" role="alert">
+                {error}
+              </p>
+            )}
+
+            {createdId && (
+              <p className="request-form-note" role="status">
+                Solicitud publicada con el ID {createdId}.
+              </p>
+            )}
 
           </form>
 

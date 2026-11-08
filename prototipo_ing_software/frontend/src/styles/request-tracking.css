@@ -176,6 +176,26 @@
   background: #124d36;
 }
 
+.tracking-save-button:disabled,
+.tracking-save-button:disabled:hover {
+  background: #176044;
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.tracking-soon {
+  margin-left: 8px;
+  padding: 3px 9px;
+
+  border-radius: 999px;
+  background: #eeeeee;
+  color: #555555;
+
+  font-size: 12px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
 .tracking-save-message {
   margin-top: 14px;
   padding: 12px;
