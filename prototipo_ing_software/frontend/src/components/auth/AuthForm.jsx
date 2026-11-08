@@ -24,7 +24,7 @@ export default function AuthForm({ register = false }) {
     return <p role="status">Comprobando sesión…</p>;
   }
 
-  // Si ya tiene sesión, dirigirlo a su panel
+  // Si ya inició sesión, dirigirlo a su panel.
   if (user) {
     return <Navigate to="/panel" replace />;
   }
@@ -48,12 +48,20 @@ export default function AuthForm({ register = false }) {
     setBusy(true);
 
     try {
+      // En login solo se envían correo y contraseña.
+      // En registro se incluyen nombre y área municipal.
+      const data = register
+        ? fields
+        : {
+            email: fields.email,
+            password: fields.password,
+          };
+
       await authenticate(
         register ? "register" : "login",
-        fields
+        data
       );
 
-      // El panel identifica el área del usuario
       navigate("/panel", { replace: true });
 
     } catch (err) {
@@ -66,6 +74,7 @@ export default function AuthForm({ register = false }) {
   return (
     <div className="home-page">
 
+      {/* Encabezado */}
       <header className="login-header">
 
         <img
@@ -100,10 +109,13 @@ export default function AuthForm({ register = false }) {
 
             <fieldset disabled={busy}>
 
+              {/* Nombre: solo registro */}
               {register && (
                 <label>
                   Nombre
+
                   <input
+                    type="text"
                     name="name"
                     value={fields.name}
                     onChange={change}
@@ -115,8 +127,10 @@ export default function AuthForm({ register = false }) {
                 </label>
               )}
 
+              {/* Correo electrónico */}
               <label>
                 Correo electrónico
+
                 <input
                   type="email"
                   name="email"
@@ -128,8 +142,10 @@ export default function AuthForm({ register = false }) {
                 />
               </label>
 
+              {/* Contraseña */}
               <label>
                 Contraseña
+
                 <input
                   type="password"
                   name="password"
@@ -146,65 +162,70 @@ export default function AuthForm({ register = false }) {
                 />
               </label>
 
-              <label>
-                Área municipal
+              {/* Área municipal: solo registro */}
+              {register && (
+                <label>
+                  Área municipal
 
-                <select
-                  name="role"
-                  value={fields.role}
-                  onChange={change}
-                  required
-                >
-                  <option value="" disabled>
-                    Selecciona tu área
-                  </option>
+                  <select
+                    name="role"
+                    value={fields.role}
+                    onChange={change}
+                    required
+                  >
+                    <option value="" disabled>
+                      Selecciona tu área
+                    </option>
 
-                  <option value="Tránsito">
-                    Tránsito
-                  </option>
+                    <option value="Tránsito">
+                      Tránsito
+                    </option>
 
-                  <option value="Espacios Públicos">
-                    Espacios Públicos
-                  </option>
+                    <option value="Espacios Públicos">
+                      Espacios Públicos
+                    </option>
 
-                  <option value="Inspección">
-                    Inspección
-                  </option>
+                    <option value="Inspección">
+                      Inspección
+                    </option>
 
-                  <option value="Seguridad Humana">
-                    Seguridad Humana
-                  </option>
+                    <option value="Seguridad Humana">
+                      Seguridad Humana
+                    </option>
 
-                  <option value="Deportes">
-                    Deportes
-                  </option>
+                    <option value="Deportes">
+                      Deportes
+                    </option>
 
-                  <option value="DIDECO">
-                    DIDECO
-                  </option>
+                    <option value="DIDECO">
+                      DIDECO
+                    </option>
 
-                  <option value="Jurídico">
-                    Jurídico
-                  </option>
+                    <option value="Jurídico">
+                      Jurídico
+                    </option>
 
-                  <option value="DOM">
-                    DOM
-                  </option>
+                    <option value="DOM">
+                      DOM
+                    </option>
 
-                  <option value="SECPLA">
-                    SECPLA
-                  </option>
+                    <option value="SECPLA">
+                      SECPLA
+                    </option>
 
-                  <option value="Delegación Peñalolén Alto">
-                    Delegación Peñalolén Alto
-                  </option>
+                    <option value="Delegación Peñalolén Alto">
+                      Delegación Peñalolén Alto
+                    </option>
 
-                  <option value="GESCOM">
-                    GESCOM
-                  </option>
-                </select>
-              </label>
+                    <option value="GESCOM">
+                      GESCOM
+                    </option>
 
+                  </select>
+                </label>
+              )}
+
+              {/* Confirmación: solo registro */}
               {register && (
                 <>
                   <small>
@@ -213,6 +234,7 @@ export default function AuthForm({ register = false }) {
 
                   <label>
                     Repetir contraseña
+
                     <input
                       type="password"
                       value={confirmation}
@@ -226,6 +248,7 @@ export default function AuthForm({ register = false }) {
                 </>
               )}
 
+              {/* Errores */}
               {error && (
                 <p
                   className="auth-error"
@@ -235,6 +258,7 @@ export default function AuthForm({ register = false }) {
                 </p>
               )}
 
+              {/* Botón */}
               <button type="submit">
                 {busy
                   ? "Espera…"
@@ -247,6 +271,7 @@ export default function AuthForm({ register = false }) {
 
           </form>
 
+          {/* Navegación login / registro */}
           <p>
             {register
               ? "¿Ya tienes cuenta? "
