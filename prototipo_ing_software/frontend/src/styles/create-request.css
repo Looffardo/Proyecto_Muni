@@ -1,0 +1,255 @@
+/* =========================================
+   ENCABEZADO
+========================================= */
+
+.create-request-header {
+  margin-bottom: 24px;
+}
+
+.create-request-header h1 {
+  margin: 4px 0 0;
+
+  font-size: 27px;
+  font-weight: 700;
+  color: #202a5b;
+}
+
+/* =========================================
+   CONTENEDOR DEL FORMULARIO
+========================================= */
+
+.request-form-card {
+  width: 100%;
+  max-width: 850px;
+
+  padding: 32px;
+
+  background-color: white;
+
+  border: 1px solid #ddd;
+  border-radius: 12px;
+}
+
+.request-form-card h2 {
+  margin: 0 0 28px;
+
+  font-size: 21px;
+  color: #222;
+}
+
+/* =========================================
+   CAMPOS
+========================================= */
+
+.request-field {
+  display: flex;
+  flex-direction: column;
+
+  gap: 9px;
+  margin-bottom: 24px;
+}
+
+.request-field label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #222;
+}
+
+.request-field input,
+.request-field select,
+.request-field textarea {
+  width: 100%;
+
+  padding: 12px 14px;
+
+  border: 1px solid #ccc;
+  border-radius: 7px;
+
+  background-color: white;
+  color: #222;
+
+  font-family: inherit;
+  font-size: 15px;
+}
+
+.request-field textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.request-field input:focus,
+.request-field select:focus,
+.request-field textarea:focus {
+  outline: 2px solid #176044;
+  outline-offset: 1px;
+
+  border-color: #176044;
+}
+
+/* =========================================
+   FOTOGRAFÍA
+========================================= */
+
+.request-photo-upload {
+  padding: 20px;
+
+  background-color: #f8f9fb;
+
+  border: 1px dashed #bbb;
+  border-radius: 8px;
+}
+
+.request-photo-upload input {
+  border: none;
+  padding: 0;
+
+  background: transparent;
+}
+
+.request-photo-name {
+  margin-top: 12px;
+
+  font-size: 13px;
+  color: #176044;
+}
+
+/* =========================================
+   BOTONES
+========================================= */
+
+.request-form-actions {
+  display: flex;
+  justify-content: flex-end;
+
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.request-form-actions button {
+  padding: 12px 20px;
+
+  border-radius: 7px;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.request-clear-button {
+  background-color: white;
+  color: #444;
+
+  border: 1px solid #ccc;
+}
+
+.request-clear-button:hover {
+  background-color: #f3f3f3;
+}
+
+.request-submit-button {
+  background-color: #176044;
+  color: white;
+
+  border: 1px solid #176044;
+}
+
+.request-submit-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.request-form-note {
+  margin-top: 16px;
+
+  font-size: 13px;
+  color: #777;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 768px) {
+
+  .create-request-header h1 {
+    font-size: 24px;
+  }
+
+  .request-form-card {
+    padding: 24px;
+  }
+
+  .request-form-actions {
+    flex-direction: column;
+  }
+
+  .request-form-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .request-form-card {
+    padding: 18px;
+  }
+
+  .request-form-card h2 {
+    font-size: 19px;
+  }
+}
+
+/* Separación entre secciones */
+
+.request-form-card h2 {
+  margin-top: 32px;
+  margin-bottom: 24px;
+
+  padding-bottom: 12px;
+
+  border-bottom: 1px solid #e5e5e5;
+
+  color: #202a5b;
+}
+
+.request-form-card h2:first-child {
+  margin-top: 0;
+}
+
+/* Checkbox de compromiso del alcalde */
+
+.request-checkbox-label {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+
+  gap: 12px;
+
+  font-weight: 400 !important;
+  cursor: pointer;
+}
+
+.request-checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+
+  margin: 2px 0 0;
+  flex-shrink: 0;
+
+  accent-color: #176044;
+}
+
+.request-checkbox-label span {
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+/* Campos automáticos */
+
+.request-field input[readonly] {
+  background-color: #f4f5f7;
+  color: #666;
+  cursor: default;
+}

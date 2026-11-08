@@ -1,16 +1,28 @@
+/* =========================================
+   FORMULARIO DE AUTENTICACIÓN
+========================================= */
+
 .auth-card {
   width: 100%;
-  max-width: 440px;
-  margin: 16px auto;
-  padding: 28px;
+  max-width: 520px;
+  margin: 20px auto;
+  padding: 36px;
+
   border: 1px solid #ddd;
   border-radius: 12px;
   background: white;
+  box-sizing: border-box;
 }
+
+/* Título del formulario */
 
 .auth-card h1 {
   margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 34px;
 }
+
+/* Formulario */
 
 .auth-card fieldset {
   border: 0;
@@ -19,31 +31,59 @@
   min-width: 0;
 }
 
+/* Etiquetas */
+
 .auth-card label {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin: 18px 0;
+
+  margin: 20px 0;
   font-weight: 600;
 }
 
-.auth-card input {
+/* Campos de entrada */
+
+.auth-card input,
+.auth-card select {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
+
   border: 1px solid #888;
   border-radius: 6px;
+
   font: inherit;
+  box-sizing: border-box;
+
+  background-color: white;
 }
+
+/* Selector de áreas */
+
+.auth-card select {
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+/* Botón de ingreso */
 
 .auth-card button {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
+
   border: 0;
   border-radius: 6px;
+
   background: #176044;
   color: white;
+
   font: inherit;
+  font-weight: 600;
   cursor: pointer;
+}
+
+.auth-card button:hover:not(:disabled) {
+  background: #124d36;
 }
 
 .auth-card button:disabled {
@@ -51,9 +91,13 @@
   cursor: wait;
 }
 
+/* Mensajes de error */
+
 .auth-error {
   color: #a11919;
 }
+
+/* Enlaces */
 
 .navbar-user {
   display: flex;
@@ -67,15 +111,110 @@
   color: #176044;
 }
 
+/* Accesibilidad */
+
 .auth-card input:focus-visible,
+.auth-card select:focus-visible,
 .auth-card button:focus-visible,
 .auth-card a:focus-visible {
   outline: 3px solid #247fbc;
   outline-offset: 3px;
 }
 
-@media (max-width: 480px) {
-  .auth-card {
-    padding: 20px;
+
+/* =========================================
+   ENCABEZADO DEL LOGIN
+========================================= */
+
+.login-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+
+  padding: 14px 40px;
+
+  background-color: white;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Logo municipal */
+
+.login-header .navbar-logo-img {
+  width: 120px;
+  height: auto;
+}
+
+/* Nombre de la plataforma */
+
+.login-header h2 {
+  margin: 0;
+
+  font-size: 21px;
+  font-weight: 600;
+  color: #000;
+}
+
+
+/* =========================================
+   FOOTER DEL LOGIN Y REGISTRO
+========================================= */
+
+.home-page:has(.auth-card) footer {
+  padding: 12px 40px;
+  min-height: auto;
+}
+
+/* Reducir separación y tamaño de textos */
+
+.home-page:has(.auth-card) footer h3,
+.home-page:has(.auth-card) footer h4 {
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+
+.home-page:has(.auth-card) footer p {
+  margin: 4px 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+
+/* =========================================
+   DISEÑO RESPONSIVO
+========================================= */
+
+@media (max-width: 600px) {
+
+  .login-header {
+    padding: 12px 20px;
+    gap: 16px;
   }
+
+  .login-header .navbar-logo-img {
+    width: 95px;
+  }
+
+  .login-header h2 {
+    font-size: 18px;
+  }
+
+  .auth-card {
+    width: calc(100% - 32px);
+    padding: 24px;
+    margin: 20px auto;
+  }
+
+  .auth-card h1 {
+    font-size: 28px;
+  }
+
+  .home-page:has(.auth-card) footer {
+    padding: 12px 20px;
+  }
+}
+
+/* Separación entre botón y enlace de registro */
+
+.auth-card form + p {
+  margin-top: 22px;
 }

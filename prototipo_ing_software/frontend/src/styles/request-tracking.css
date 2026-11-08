@@ -1,0 +1,287 @@
+/* =========================================
+   SECCIONES DE SEGUIMIENTO
+========================================= */
+
+.tracking-section {
+  padding: 24px 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.tracking-section:first-child {
+  padding-top: 0;
+}
+
+.tracking-section:last-child {
+  border-bottom: none;
+}
+
+.tracking-section h3 {
+  margin: 0 0 22px;
+
+  color: #202a5b;
+  font-size: 18px;
+}
+
+/* =========================================
+   ESTADOS
+========================================= */
+
+.tracking-status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.tracking-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tracking-field label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #222;
+}
+
+.tracking-field select,
+.tracking-field textarea,
+.tracking-field input {
+  width: 100%;
+  padding: 12px;
+
+  border: 1px solid #ccc;
+  border-radius: 7px;
+
+  background: white;
+  color: #222;
+
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.tracking-field textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.tracking-field select:disabled,
+.tracking-field textarea:disabled,
+.tracking-field input:disabled {
+  background: #f5f6f8;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.tracking-field small {
+  font-size: 12px;
+  color: #777;
+}
+
+/* =========================================
+   COMPARACIÓN AUTOMÁTICA
+========================================= */
+
+.tracking-comparison {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-top: 22px;
+  padding: 16px 20px;
+
+  background: #f5f7fa;
+  border-radius: 8px;
+}
+
+.tracking-comparison > span:first-child {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.tracking-match,
+.tracking-mismatch {
+  padding: 6px 12px;
+  border-radius: 20px;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tracking-match {
+  background: #e5f5e9;
+  color: #176044;
+}
+
+.tracking-mismatch {
+  background: #fff1db;
+  color: #965500;
+}
+
+/* =========================================
+   COMENTARIOS
+========================================= */
+
+.tracking-comments {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 22px;
+}
+
+/* =========================================
+   DOCUMENTOS
+========================================= */
+
+.tracking-document-link {
+  display: inline-block;
+
+  margin-top: 12px;
+
+  color: #176044;
+  font-size: 14px;
+  text-decoration: underline;
+}
+
+/* =========================================
+   ACCIONES
+========================================= */
+
+.tracking-actions {
+  display: flex;
+  justify-content: flex-end;
+
+  margin-top: 24px;
+}
+
+.tracking-save-button {
+  padding: 12px 20px;
+
+  background: #176044;
+  color: white;
+
+  border: none;
+  border-radius: 7px;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.tracking-save-button:hover {
+  background: #124d36;
+}
+
+.tracking-save-message {
+  margin-top: 14px;
+  padding: 12px;
+
+  background: #e8f3ed;
+  color: #176044;
+
+  border-radius: 7px;
+  font-size: 13px;
+}
+
+/* =========================================
+   HISTORIAL
+========================================= */
+
+.tracking-history-empty {
+  padding: 22px;
+
+  background: #f8f9fb;
+  border-radius: 8px;
+
+  color: #777;
+  font-size: 14px;
+}
+
+.tracking-history {
+  display: flex;
+  flex-direction: column;
+
+  gap: 22px;
+}
+
+.tracking-history-item {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 14px;
+}
+
+.tracking-history-marker {
+  width: 12px;
+  height: 12px;
+
+  margin-top: 5px;
+  flex-shrink: 0;
+
+  background: #176044;
+  border-radius: 50%;
+}
+
+.tracking-history-item > div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tracking-history-item strong {
+  font-size: 14px;
+}
+
+.tracking-history-item span {
+  font-size: 12px;
+  color: #777;
+}
+
+.tracking-history-item p {
+  font-size: 14px;
+  color: #555;
+}
+
+/* =========================================
+   AVISO DE DEMOSTRACIÓN
+========================================= */
+
+.request-demo-disclaimer {
+  margin-top: 24px;
+
+  color: #777;
+  font-size: 12px;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 768px) {
+
+  .tracking-status-grid,
+  .tracking-comments {
+    grid-template-columns: 1fr;
+  }
+
+  .tracking-comparison {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tracking-section {
+    padding: 20px 0;
+  }
+
+  .tracking-actions {
+    justify-content: stretch;
+  }
+
+  .tracking-save-button {
+    width: 100%;
+  }
+}

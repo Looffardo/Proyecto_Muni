@@ -33,12 +33,14 @@ prototipo_capstone/ #Nota de Looff: Como que capstone?!? 0_o
 
 ```bash
 git clone URL_DEL_REPOSITORIO
+ cd Proyecto_Muni 
 cd prototipo_ing_software
 ```
 
 ### 2. Instalar dependencias del backend
 
 ```bash
+ cd Proyecto_Muni 
 cd prototipo_ing_software
 cd backend
 npm install
@@ -75,6 +77,7 @@ MongoDB conectado correctamente
 Abrir otra terminal y ejecutar:
 
 ```bash
+ cd Proyecto_Muni 
 cd prototipo_ing_software
 cd frontend
 npm install

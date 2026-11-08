@@ -1,0 +1,160 @@
+/* =========================================
+   NAVEGACIÓN DE CUENTA
+========================================= */
+
+.account-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* =========================================
+   IDENTIFICADOR DE ÁREA
+========================================= */
+
+.account-navigation .navbar-role {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 7px 13px;
+
+  background-color: #e8f3ed;
+  color: #176044;
+
+  border-radius: 20px;
+
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* =========================================
+   BOTÓN MI CUENTA
+========================================= */
+
+.home-page .account-navigation .account-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  padding: 9px 14px;
+
+  background-color: #f3f5f7;
+  color: #253047;
+
+  border: 1px solid #e2e5e9;
+  border-radius: 8px;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+}
+
+.home-page .account-navigation .account-button:hover {
+  background-color: #e8edf1;
+  border-color: #cbd3dc;
+}
+
+.account-button svg {
+  flex-shrink: 0;
+}
+
+/* =========================================
+   BOTÓN CERRAR SESIÓN
+========================================= */
+
+.home-page .account-navigation .logout-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  width: auto;
+  padding: 9px 14px;
+
+  background-color: #fff;
+  color: #a12c2c;
+
+  border: 1px solid #e7c6c6;
+  border-radius: 8px;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+}
+
+.home-page .account-navigation .logout-button:hover:not(:disabled) {
+  background-color: #fff1f1;
+  border-color: #d99b9b;
+}
+
+.logout-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.logout-button svg {
+  flex-shrink: 0;
+}
+
+/* =========================================
+   ACCESIBILIDAD
+========================================= */
+
+.account-button:focus-visible,
+.logout-button:focus-visible {
+  outline: 3px solid #247fbc;
+  outline-offset: 3px;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 768px) {
+
+  .account-navigation {
+    justify-content: center;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .home-page .account-navigation .account-button,
+  .home-page .account-navigation .logout-button {
+    width: auto;
+    padding: 9px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 400px) {
+
+  .account-navigation .navbar-role {
+    width: 100%;
+  }
+
+  .home-page .account-navigation .account-button,
+  .home-page .account-navigation .logout-button {
+    flex: 1;
+  }
+}

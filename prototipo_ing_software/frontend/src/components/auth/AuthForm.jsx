@@ -2,10 +2,8 @@ import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 
 import useAuth from "../../hooks/useAuth";
-import Navbar from "../navigation/Navbar";
 import Footer from "../navigation/Footer";
-
-// Componente de formulario de autenticación para registro e inicio de sesión
+import logoPenalolen from "../../assets/logos/logo-penalolen.png";
 
 export default function AuthForm({ register = false }) {
   const { user, loading, authenticate, sessionError } = useAuth();
@@ -26,8 +24,9 @@ export default function AuthForm({ register = false }) {
     return <p role="status">Comprobando sesión…</p>;
   }
 
+  // Si ya tiene sesión, dirigirlo a su panel
   if (user) {
-    return <Navigate to="/cuenta" replace />;
+    return <Navigate to="/panel" replace />;
   }
 
   function change(event) {
@@ -49,8 +48,14 @@ export default function AuthForm({ register = false }) {
     setBusy(true);
 
     try {
-      await authenticate(register ? "register" : "login", fields);
-      navigate("/cuenta", { replace: true });
+      await authenticate(
+        register ? "register" : "login",
+        fields
+      );
+
+      // El panel identifica el área del usuario
+      navigate("/panel", { replace: true });
+
     } catch (err) {
       setError(err.message);
     } finally {
@@ -60,11 +65,26 @@ export default function AuthForm({ register = false }) {
 
   return (
     <div className="home-page">
-      <Navbar />
+
+      <header className="login-header">
+
+        <img
+          src={logoPenalolen}
+          alt="Municipalidad de Peñalolén"
+          className="navbar-logo-img"
+        />
+
+        <h2>Solicitudes Barriales</h2>
+
+      </header>
 
       <main className="home-content">
+
         <section className="auth-card">
-          <h1>{register ? "Crear cuenta" : "Iniciar sesión"}</h1>
+
+          <h1>
+            {register ? "Crear cuenta" : "Iniciar sesión"}
+          </h1>
 
           <p>
             {register
@@ -72,10 +92,14 @@ export default function AuthForm({ register = false }) {
               : "Ingresa con tu correo y contraseña."}
           </p>
 
-          {sessionError && <p role="status">{sessionError}</p>}
+          {sessionError && (
+            <p role="status">{sessionError}</p>
+          )}
 
           <form onSubmit={submit}>
+
             <fieldset disabled={busy}>
+
               {register && (
                 <label>
                   Nombre
@@ -112,7 +136,9 @@ export default function AuthForm({ register = false }) {
                   value={fields.password}
                   onChange={change}
                   autoComplete={
-                    register ? "new-password" : "current-password"
+                    register
+                      ? "new-password"
+                      : "current-password"
                   }
                   minLength={register ? 8 : undefined}
                   maxLength={72}
@@ -120,19 +146,64 @@ export default function AuthForm({ register = false }) {
                 />
               </label>
 
-              <select name="role" value={fields.role} onChange={change} required>
-                <option value="Tránsito">Tránsito</option>
-                <option value="Espacios Públicos">Espacios Públicos</option>
-                <option value="Inspección">Inspección</option>
-                <option value="Seguridad Humana">Seguridad Humana</option>
-                <option value="Deportes">Deportes</option>
-                <option value="DIDECO">DIDECO</option>
-                <option value="Jurídico">Jurídico</option>
-                <option value="DOM">DOM</option>
-                <option value="SECPLA">SECPLA</option>
-                <option value="Delegación Peñalolén Alto">Delegación Peñalolén Alto</option>
-                <option value="GESCOM">GESCOM</option>
-              </select>
+              <label>
+                Área municipal
+
+                <select
+                  name="role"
+                  value={fields.role}
+                  onChange={change}
+                  required
+                >
+                  <option value="" disabled>
+                    Selecciona tu área
+                  </option>
+
+                  <option value="Tránsito">
+                    Tránsito
+                  </option>
+
+                  <option value="Espacios Públicos">
+                    Espacios Públicos
+                  </option>
+
+                  <option value="Inspección">
+                    Inspección
+                  </option>
+
+                  <option value="Seguridad Humana">
+                    Seguridad Humana
+                  </option>
+
+                  <option value="Deportes">
+                    Deportes
+                  </option>
+
+                  <option value="DIDECO">
+                    DIDECO
+                  </option>
+
+                  <option value="Jurídico">
+                    Jurídico
+                  </option>
+
+                  <option value="DOM">
+                    DOM
+                  </option>
+
+                  <option value="SECPLA">
+                    SECPLA
+                  </option>
+
+                  <option value="Delegación Peñalolén Alto">
+                    Delegación Peñalolén Alto
+                  </option>
+
+                  <option value="GESCOM">
+                    GESCOM
+                  </option>
+                </select>
+              </label>
 
               {register && (
                 <>
@@ -156,7 +227,10 @@ export default function AuthForm({ register = false }) {
               )}
 
               {error && (
-                <p className="auth-error" role="alert">
+                <p
+                  className="auth-error"
+                  role="alert"
+                >
                   {error}
                 </p>
               )}
@@ -168,19 +242,31 @@ export default function AuthForm({ register = false }) {
                     ? "Crear cuenta"
                     : "Ingresar"}
               </button>
+
             </fieldset>
+
           </form>
 
           <p>
-            {register ? "¿Ya tienes cuenta? " : "¿No tienes cuenta? "}
-            <Link to={register ? "/login" : "/registro"}>
-              {register ? "Inicia sesión" : "Regístrate"}
+            {register
+              ? "¿Ya tienes cuenta? "
+              : "¿No tienes cuenta? "}
+
+            <Link
+              to={register ? "/login" : "/registro"}
+            >
+              {register
+                ? "Inicia sesión"
+                : "Regístrate"}
             </Link>
           </p>
+
         </section>
+
       </main>
 
       <Footer />
+
     </div>
   );
 }

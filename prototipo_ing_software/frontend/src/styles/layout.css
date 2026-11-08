@@ -1,237 +1,141 @@
-/* ========================= 
-   ESTRUCTURA GENERAL 
-========================= */ 
- 
-.home-page { 
-  width: 100%; 
-  min-height: 100vh; 
-  display: flex; 
-  flex-direction: column; 
-} 
- 
-.home-content { 
-  flex: 1; 
-  width: 100%; 
-  max-width: 1200px; 
-  margin: 0 auto; 
-  padding: 40px; 
-} 
- 
-/* ========================= 
-   NAVBAR 
-========================= */ 
- 
-.navbar {
+/* =========================================
+   CONFIGURACIÓN GENERAL
+========================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
   width: 100%;
-  min-height: 72px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 24px;
-  padding: 10px 32px;
-
-  border-bottom: 1px solid #ddd;
-  background-color: white;
+  min-height: 100%;
 }
 
-.navbar-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
-}
-
-.navbar-logo-img {
-  width: 190px;
-  height: 170px;
-  object-fit: contain;
-}
-
-.navbar-brand h2 {
+body {
+  width: 100%;
+  min-height: 100%;
   margin: 0;
-  font-size: 22px;
 }
 
-.navbar-links {
-  flex: 1;
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
 
+/* =========================================
+   DISTRIBUCIÓN GENERAL DE PÁGINAS
+========================================= */
+
+.home-page {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
 
-  gap: 28px;
-}
-
-.navbar-links a {
-  color: #222;
-  text-decoration: none;
-}
-
-.navbar-links a:hover {
-  text-decoration: underline;
-}
-
-.navbar-user {
-  flex-shrink: 0;
-}
-
-.navbar-user button {
-  padding: 10px 16px;
-  cursor: pointer;
-}
-
-/* ========================= 
-   HOME
-========================= */
-
-.home-intro {
-  margin-bottom: 70px;
-}
-
-.home-intro h1 {
-  margin-top: 0;
-  margin-bottom: 12px;
-  font-size: 32px;
-}
-
-.home-intro p {
-  max-width: 700px;
-  margin: 0;
-  line-height: 1.6;
-}
-
-/* ========================= 
-   CÓMO FUNCIONA
-========================= */
-
-.how-it-works {
   width: 100%;
-  text-align: center;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
-.how-it-works h2 {
-  margin-bottom: 35px;
-  font-size: 26px;
-}
+/* El contenido aprovecha el espacio disponible */
 
-.steps-container {
+.home-content,
+.dashboard-content {
+  flex: 1 0 auto;
   width: 100%;
-
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-
-  gap: 24px;
+  min-width: 0;
 }
 
-.step-card {
-  padding: 30px 24px;
+/* Textos */
 
-  border: 1px solid #ddd;
-  border-radius: 12px;
-
-  background-color: white;
-}
-
-.step-number {
-  width: 42px;
-  height: 42px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  margin: 0 auto 15px;
-
-  border-radius: 50%;
-
-  background-color: #20285c;
-  color: white;
-
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.step-card h3 {
-  margin-top: 0;
-  margin-bottom: 10px;
-}
-
-.step-card p {
+p {
   margin: 0;
   line-height: 1.5;
 }
 
-/* ========================= 
-   FOOTER 
-========================= */ 
- 
-.footer { 
-  width: 100%; 
-  max-width: 100%; 
+/* =========================================
+   FOOTER
+========================================= */
 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: flex-start; 
+.footer {
+  width: 100%;
 
-  gap: 30px; 
-  padding: 30px 40px; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-  border-top: 1px solid #ddd; 
-  background-color: #f7f7f7; 
-} 
- 
-.footer h3 { 
-  margin-top: 0; 
-} 
- 
-/* ========================= 
-   MAPA 
-========================= */ 
- 
-.map-page { 
-  width: 100%; 
-} 
- 
-.map-container { 
-  width: 100%; 
-  height: 70vh; 
-  margin-top: 20px; 
-} 
- 
-.leaflet-map { 
-  width: 100%; 
-  height: 100%; 
-  border-radius: 12px; 
-} 
- 
-/* ========================= 
-   TABLET 
-========================= */ 
- 
-@media (max-width: 1024px) { 
- 
-  .navbar { 
-    padding: 10px 24px; 
-    gap: 20px; 
+  gap: 24px;
+  padding: 18px 40px;
+
+  margin-top: auto;
+
+  border-top: 1px solid #ddd;
+  background-color: #f7f7f7;
+
+  flex-shrink: 0;
+}
+
+.footer h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+}
+
+.footer p {
+  margin: 3px 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* =========================================
+   MAPA
+========================================= */
+
+.map-page {
+  width: 100%;
+  min-width: 0;
+}
+
+.map-container {
+  width: 100%;
+  height: 65vh;
+  min-height: 350px;
+
+  margin-top: 20px;
+}
+
+.leaflet-map {
+  width: 100%;
+  height: 100%;
+
+  border-radius: 12px;
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 1024px) {
+
+  .navbar {
+    padding: 10px 24px;
+    gap: 20px;
   }
 
   .navbar-logo-img {
-    width: 150px;
-    height: 120px;
+    width: 120px;
+    height: auto;
   }
- 
-  .navbar-links { 
-    gap: 16px; 
-  } 
- 
-  .home-content { 
-    padding: 30px 24px; 
+
+  .navbar-links {
+    gap: 16px;
+  }
+
+  .home-content {
+    padding: 30px 24px;
   }
 
   .home-intro {
-    margin-bottom: 55px;
+    margin-bottom: 45px;
   }
 
   .steps-container {
@@ -241,62 +145,58 @@
   .step-card {
     padding: 24px 18px;
   }
- 
-  .footer { 
-    padding: 24px; 
-  } 
-} 
- 
-/* ========================= 
-   MOBILE 
-========================= */ 
- 
-@media (max-width: 768px) { 
- 
-  .navbar { 
-    flex-direction: column; 
-    align-items: flex-start; 
 
-    gap: 15px; 
-    padding: 16px 20px; 
-  } 
+  .footer {
+    padding: 18px 24px;
+  }
+}
+
+/* =========================================
+   MÓVIL
+========================================= */
+
+@media (max-width: 768px) {
+
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 15px;
+    padding: 16px 20px;
+  }
 
   .navbar-brand {
     width: 100%;
   }
- 
+
   .navbar-logo-img {
-    width: 110px;
-    height: 80px;
+    width: 95px;
+    height: auto;
   }
 
   .navbar-brand h2 {
-    font-size: 20px;
+    font-size: 18px;
   }
- 
-  .navbar-links { 
-    width: 100%; 
 
-    flex-direction: column; 
-    align-items: flex-start; 
+  .navbar-links {
+    width: 100%;
 
-    gap: 10px; 
-  } 
- 
-  .navbar-user { 
-    width: 100%; 
-  } 
- 
-  .navbar-user button { 
-    width: 100%; 
-  } 
- 
-  .home-content { 
-    padding: 24px 16px; 
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 10px;
+  }
+
+  .navbar-user {
+    width: 100%;
+  }
+
+  .home-content {
+    padding: 24px 16px;
   }
 
   .home-intro {
-    margin-bottom: 45px;
+    margin-bottom: 35px;
   }
 
   .home-intro h1 {
@@ -311,14 +211,17 @@
   .steps-container {
     grid-template-columns: 1fr;
   }
- 
-  .footer { 
-    flex-direction: column; 
-    gap: 20px; 
-    padding: 24px 20px; 
+
+  .footer {
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 12px;
+    padding: 16px 20px;
   }
 
-  .map-container { 
-    height: 60vh; 
-  } 
+  .map-container {
+    height: 55vh;
+    min-height: 300px;
+  }
 }
