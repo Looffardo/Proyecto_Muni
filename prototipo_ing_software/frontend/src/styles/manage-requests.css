@@ -160,6 +160,16 @@
   color: #176044;
 }
 
+.status-infeasible {
+  background: #fde8e8;
+  color: #a12828;
+}
+
+.status-other {
+  background: #eeeeee;
+  color: #555555;
+}
+
 /* =========================================
    BOTÓN VER DETALLE
 ========================================= */
