@@ -71,8 +71,19 @@ export default function createApp({
 
   app.use((err, _req, res, _next) => {
     if (err.code === 11000) {
+      console.error(
+        "Conflicto de clave única en API:",
+        err.keyPattern || err.index || "índice desconocido"
+      );
+
+      if (err.keyPattern?.email || err.keyValue?.email) {
+        return res.status(409).json({
+          message: "Ese correo ya está registrado.",
+        });
+      }
+
       return res.status(409).json({
-        message: "Ese correo ya está registrado.",
+        message: "Ya existe un registro con esos datos.",
       });
     }
 

@@ -2,6 +2,12 @@ import mongoose from "mongoose";
 
 const requestSchema = new mongoose.Schema(
   {
+    code: {
+      type: Number,
+      required: true,
+      min: 1,
+      immutable: true,
+    },
     title: {
       type: String,
       required: true,
@@ -83,7 +89,9 @@ const requestSchema = new mongoose.Schema(
       default: null,
     },
   },
-  { timestamps: true }
+  { timestamps: true, autoIndex: false }
 );
+
+requestSchema.index({ code: 1 }, { unique: true });
 
 export default mongoose.model("Request", requestSchema);

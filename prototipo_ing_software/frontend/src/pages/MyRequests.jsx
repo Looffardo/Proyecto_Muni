@@ -69,6 +69,7 @@ function RequestDetail({
   onSave,
 }) {
   const requestId = request._id || request.id || "unknown";
+  const requestCode = request.code ?? requestId;
   const safeHistory = Array.isArray(request.history) ? request.history : [];
 
   const [draft, setDraft] = useState({

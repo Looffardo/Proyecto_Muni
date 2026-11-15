@@ -1,4 +1,48 @@
 import Request from "../models/Request.js";
+import Counter from "../models/Counter.js";
+
+async function getNextRequestCode() {
+  const counter = await Counter.findByIdAndUpdate(
+    "request",
+    { $inc: { sequence: 1 } },
+    { new: true, upsert: true }
+  );
+
+  if (!counter) {
+    throw new Error("No se pudo asignar el código de la solicitud.");
+  }
+
+  return counter.sequence;
+}
+
+export async function initializeRequestCodes() {
+  const [highestRequest] = await Request.collection
+    .find({ code: { $type: "number" } })
+    .sort({ code: -1 })
+    .limit(1)
+    .toArray();
+
+  await Counter.collection.updateOne(
+    { _id: "request" },
+    { $max: { sequence: highestRequest?.code || 0 } },
+    { upsert: true }
+  );
+
+  const requestsWithoutCode = await Request.collection
+    .find({ code: null })
+    .sort({ _id: 1 })
+    .project({ _id: 1 })
+    .toArray();
+
+  for (const request of requestsWithoutCode) {
+    const code = await getNextRequestCode();
+
+    await Request.collection.updateOne(
+      { _id: request._id, code: null },
+      { $set: { code } }
+    );
+  }
+}
 
 function sanitizeText(value, fallback = "") {
   if (typeof value !== "string") return fallback;
@@ -107,10 +151,12 @@ export function validateRequestBody(body = {}) {
 export async function createRequestEntry(body) {
   const requestData = validateRequestBody(body);
   const coordinates = await geocodeLocation(requestData.location);
+  const code = await getNextRequestCode();
 
   return Request.create({
     ...requestData,
     ...coordinates,
+    code,
   });
 }
 

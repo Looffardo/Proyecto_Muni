@@ -131,7 +131,7 @@ export default function CreateRequest() {
 
       const response = await createRequest(payload);
 
-      setSuccess(`Solicitud publicada correctamente. ID: ${response.request?._id || "generado"}`);
+      setSuccess(`Solicitud publicada correctamente. ID: ${response.request?.code ?? "generado"}`);
       handleClear();
     } catch (submitError) {
       setError(submitError.message || "No se pudo publicar la solicitud.");
