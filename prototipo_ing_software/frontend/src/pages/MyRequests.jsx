@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
+import { getRequests } from "../api/requestsApi";
 import useAuth from "../hooks/useAuth";
 import Navbar from "../components/navigation/Navbar";
 import Footer from "../components/navigation/Footer";
@@ -36,64 +37,6 @@ const PRIORIDADES = {
   3: "Alta",
 };
 
-// Solicitudes ficticias para desarrollar el frontend.
-const SOLICITUDES_INICIALES = [
-  {
-    id: "T-0001",
-    title: "Reparación de luminaria",
-    description: "Luminaria sin funcionamiento en sector residencial.",
-    area: "Espacios Públicos",
-    priority: 3,
-    status: "Pendiente",
-    location: "Peñalolén",
-    date: "2026-11-01",
-    cabinetStatus: "No iniciado",
-    reportedStatus: "No iniciado",
-    directionReport: "",
-    directionComment: "",
-    cabinetComment: "",
-    managerComment: "",
-    url: "",
-    history: [],
-  },
-  {
-    id: "T-0002",
-    title: "Reparación de vereda",
-    description: "Desnivel en vereda que dificulta el tránsito peatonal.",
-    area: "DOM",
-    priority: 2,
-    status: "En proceso",
-    location: "Peñalolén",
-    date: "2026-11-02",
-    cabinetStatus: "En diseño",
-    reportedStatus: "No iniciado",
-    directionReport: "",
-    directionComment: "",
-    cabinetComment: "",
-    managerComment: "",
-    url: "",
-    history: [],
-  },
-  {
-    id: "T-0003",
-    title: "Señalización vial",
-    description: "Reposición de señal de tránsito deteriorada.",
-    area: "Tránsito",
-    priority: 1,
-    status: "Resuelta",
-    location: "Peñalolén",
-    date: "2026-11-03",
-    cabinetStatus: "Terminado",
-    reportedStatus: "Terminado",
-    directionReport: "",
-    directionComment: "",
-    cabinetComment: "",
-    managerComment: "",
-    url: "",
-    history: [],
-  },
-];
-
 function TrackingField({
   label,
   name,
@@ -125,14 +68,17 @@ function RequestDetail({
   user,
   onSave,
 }) {
+  const requestId = request._id || request.id || "unknown";
+  const safeHistory = Array.isArray(request.history) ? request.history : [];
+
   const [draft, setDraft] = useState({
-    cabinetStatus: request.cabinetStatus,
-    reportedStatus: request.reportedStatus,
-    directionReport: request.directionReport,
-    directionComment: request.directionComment,
-    cabinetComment: request.cabinetComment,
-    managerComment: request.managerComment,
-    url: request.url,
+    cabinetStatus: request.cabinetStatus || "No iniciado",
+    reportedStatus: request.reportedStatus || "No iniciado",
+    directionReport: request.directionReport || "",
+    directionComment: request.directionComment || "",
+    cabinetComment: request.cabinetComment || "",
+    managerComment: request.managerComment || "",
+    url: request.url || "",
   });
 
   const [savedMessage, setSavedMessage] = useState("");
@@ -160,7 +106,7 @@ function RequestDetail({
   }
 
   function saveDemo() {
-    onSave(request.id, draft, user?.name || "Funcionario");
+    onSave(requestId, draft, user?.name || "Funcionario");
 
     setSavedMessage(
       "Cambios aplicados en esta vista de prueba. No se guardaron en MongoDB."
@@ -182,27 +128,32 @@ function RequestDetail({
 
           <div>
             <span>ID de solicitud</span>
-            <strong>{request.id}</strong>
+            <strong>{requestId}</strong>
           </div>
 
           <div>
             <span>Área responsable</span>
-            <strong>{request.area}</strong>
+            <strong>{request.area || "Sin área"}</strong>
           </div>
 
           <div>
             <span>Prioridad</span>
-            <strong>{PRIORIDADES[request.priority]}</strong>
+            <strong>{PRIORIDADES[request.priority] || "Sin prioridad"}</strong>
           </div>
 
           <div>
             <span>Fecha de registro</span>
-            <strong>{request.date}</strong>
+            <strong>
+              {request.date ||
+                (request.createdAt
+                  ? new Date(request.createdAt).toLocaleDateString("es-CL")
+                  : "Sin fecha")}
+            </strong>
           </div>
 
           <div>
             <span>Ubicación</span>
-            <strong>{request.location}</strong>
+            <strong>{request.location || "Sin ubicación"}</strong>
           </div>
 
         </div>
@@ -223,12 +174,12 @@ function RequestDetail({
 
           <div className="tracking-field">
 
-            <label htmlFor={`cabinet-${request.id}`}>
+            <label htmlFor={`cabinet-${requestId}`}>
               Estado Gabinete
             </label>
 
             <select
-              id={`cabinet-${request.id}`}
+              id={`cabinet-${requestId}`}
               name="cabinetStatus"
               value={draft.cabinetStatus}
               onChange={change}
@@ -249,12 +200,12 @@ function RequestDetail({
 
           <div className="tracking-field">
 
-            <label htmlFor={`reported-${request.id}`}>
+            <label htmlFor={`reported-${requestId}`}>
               Estado Reportado
             </label>
 
             <select
-              id={`reported-${request.id}`}
+              id={`reported-${requestId}`}
               name="reportedStatus"
               value={draft.reportedStatus}
               onChange={change}
@@ -349,12 +300,12 @@ function RequestDetail({
 
         <div className="tracking-field">
 
-          <label htmlFor={`url-${request.id}`}>
+          <label htmlFor={`url-${requestId}`}>
             URL de respaldo
           </label>
 
           <input
-            id={`url-${request.id}`}
+            id={`url-${requestId}`}
             type="url"
             name="url"
             value={draft.url}
@@ -365,7 +316,7 @@ function RequestDetail({
 
         </div>
 
-        {draft.url.startsWith("https://") && (
+        {typeof draft.url === "string" && draft.url.startsWith("https://") && (
           <a
             href={draft.url}
             target="_blank"
@@ -404,18 +355,18 @@ function RequestDetail({
 
         <h3>5. Historial de seguimiento</h3>
 
-        {request.history.length === 0 ? (
+        {safeHistory.length === 0 ? (
 
           <div className="tracking-history-empty">
             Todavía no hay actualizaciones registradas
-            en esta demostración.
+            para esta solicitud.
           </div>
 
         ) : (
 
           <div className="tracking-history">
 
-            {[...request.history].reverse().map((entry) => (
+            {[...safeHistory].reverse().map((entry) => (
 
               <article
                 className="tracking-history-item"
@@ -453,14 +404,31 @@ export default function MyRequests() {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [requests, setRequests] = useState(
-    SOLICITUDES_INICIALES
-  );
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
 
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [priority, setPriority] = useState("");
   const [expandedId, setExpandedId] = useState(null);
+
+  useEffect(() => {
+    async function loadRequests() {
+      try {
+        setLoading(true);
+        setLoadError("");
+        const data = await getRequests();
+        setRequests(data);
+      } catch (error) {
+        setLoadError(error.message || "No se pudieron cargar las solicitudes.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadRequests();
+  }, []);
 
   const isGescom =
     user?.role?.trim().toUpperCase() === "GESCOM";
@@ -486,7 +454,9 @@ export default function MyRequests() {
   function saveChanges(id, changes, author) {
     setRequests((previous) =>
       previous.map((request) => {
-        if (request.id !== id) {
+        const currentId = request._id || request.id;
+
+        if (currentId !== id) {
           return request;
         }
 
@@ -508,10 +478,12 @@ export default function MyRequests() {
             ".",
         };
 
+        const history = Array.isArray(request.history) ? request.history : [];
+
         return {
           ...request,
           ...changes,
-          history: [...request.history, entry],
+          history: [...history, entry],
         };
       })
     );
@@ -519,21 +491,27 @@ export default function MyRequests() {
 
   const filteredRequests = requests.filter((request) => {
     const query = search.trim().toLowerCase();
+    const idValue = String(request._id || request.id || "");
+    const titleValue = String(request.title || "");
+    const descriptionValue = String(request.description || "");
+    const areaValue = String(request.area || "");
+    const statusValue = String(request.status || "");
+    const priorityValue = Number(request.priority ?? 0);
 
     const matchesSearch =
-      request.id.toLowerCase().includes(query) ||
-      request.title.toLowerCase().includes(query) ||
-      request.description.toLowerCase().includes(query);
+      idValue.toLowerCase().includes(query) ||
+      titleValue.toLowerCase().includes(query) ||
+      descriptionValue.toLowerCase().includes(query);
 
     const matchesStatus =
-      !status || request.status === status;
+      !status || statusValue === status;
 
     const matchesArea =
-      !area || request.area === area;
+      !area || areaValue === area;
 
     const matchesPriority =
       priority === "" ||
-      request.priority === Number(priority);
+      priorityValue === Number(priority);
 
     return (
       matchesSearch &&
@@ -629,13 +607,22 @@ export default function MyRequests() {
         </section>
 
         <div className="requests-results">
-          {filteredRequests.length} solicitudes encontradas
+          {loading
+            ? "Cargando solicitudes..."
+            : `${filteredRequests.length} solicitudes encontradas`}
         </div>
+
+        {loadError && (
+          <div className="requests-empty">
+            <h2>Error al cargar solicitudes</h2>
+            <p>{loadError}</p>
+          </div>
+        )}
 
         {/* SOLICITUDES */}
         <section className="requests-list">
 
-          {filteredRequests.length === 0 ? (
+          {!loading && filteredRequests.length === 0 ? (
 
             <div className="requests-empty">
 
@@ -650,12 +637,19 @@ export default function MyRequests() {
 
           ) : (
 
-            filteredRequests.map((request) => (
+            filteredRequests.map((request) => {
+              const id = String(request._id || request.id || "");
+              const title = request.title || "Solicitud sin título";
+              const area = request.area || "Sin área";
+              const status = request.status || "Pendiente";
+              const description = request.description || "Sin descripción.";
+              const priority = Number(request.priority ?? 0);
 
-              <article
-                className="request-item"
-                key={request.id}
-              >
+              return (
+                <article
+                  className="request-item"
+                  key={id}
+                >
 
                 <div className="request-item-main">
 
@@ -663,32 +657,30 @@ export default function MyRequests() {
 
                     <div className="request-item-heading">
 
-                      <h2>{request.title}</h2>
+                      <h2>{title}</h2>
 
                       <span
                         className={`request-status ${
-                          request.status === "Pendiente"
+                          status === "Pendiente"
                             ? "status-pending"
-                            : request.status === "En proceso"
+                            : status === "En proceso"
                               ? "status-progress"
                               : "status-resolved"
                         }`}
                       >
-                        {request.status}
+                        {status}
                       </span>
 
                     </div>
 
                     <p className="request-item-meta">
-                      {request.area}
+                      {area}
                       {" · "}
-                      Prioridad {
-                        PRIORIDADES[request.priority]
-                      }
+                      Prioridad {PRIORIDADES[priority] || "Sin prioridad"}
                     </p>
 
                     <p className="request-item-description">
-                      {request.description}
+                      {description}
                     </p>
 
                   </div>
@@ -696,27 +688,33 @@ export default function MyRequests() {
                   <button
                     type="button"
                     className="request-details-button"
-                    aria-expanded={expandedId === request.id}
+                    aria-expanded={expandedId === id}
                     onClick={() =>
                       setExpandedId(
-                        expandedId === request.id
-                          ? null
-                          : request.id
+                        expandedId === id ? null : id
                       )
                     }
                   >
-                    {expandedId === request.id
+                    {expandedId === id
                       ? "Ocultar detalle"
                       : "Ver detalle"}
                   </button>
 
                 </div>
 
-                {expandedId === request.id && (
+                {expandedId === id && (
 
                   <RequestDetail
-                    key={request.id}
-                    request={request}
+                    key={id}
+                    request={{
+                      ...request,
+                      id,
+                      title,
+                      area,
+                      status,
+                      description,
+                      priority,
+                    }}
                     isGescom={isGescom}
                     user={user}
                     onSave={saveChanges}
@@ -725,17 +723,18 @@ export default function MyRequests() {
                 )}
 
               </article>
-
-            ))
+              );
+            })
 
           )}
 
         </section>
 
-        <p className="request-demo-disclaimer">
-          Vista de demostración con solicitudes ficticias.
-          Los cambios no se almacenan en MongoDB.
-        </p>
+        {!loading && !loadError && (
+          <p className="request-demo-disclaimer">
+            Mostrando solicitudes
+          </p>
+        )}
 
       </main>
 

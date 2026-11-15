@@ -40,6 +40,7 @@ const FUENTES = [
 
 export default function CreateRequest() {
   const [form, setForm] = useState({
+    title: "",
     description: "",
     type: "",
     location: "",
@@ -76,6 +77,7 @@ export default function CreateRequest() {
 
   function handleClear() {
     setForm({
+      title: "",
       description: "",
       type: "",
       location: "",
@@ -104,7 +106,7 @@ export default function CreateRequest() {
     setError("");
     setSuccess("");
 
-    if (!form.description || !form.type || !form.location || !form.area || !form.priority) {
+    if (!form.title || !form.description || !form.type || !form.location || !form.area || !form.priority) {
       setError("Completa los campos obligatorios antes de enviar la solicitud.");
       return;
     }
@@ -113,6 +115,7 @@ export default function CreateRequest() {
 
     try {
       const payload = {
+        title: form.title,
         description: form.description,
         type: form.type,
         location: form.location,
@@ -189,6 +192,25 @@ export default function CreateRequest() {
                 type="text"
                 value="Se asignará al registrar la solicitud"
                 readOnly
+              />
+
+            </div>
+
+            <div className="request-field">
+
+              <label htmlFor="request-title">
+                Título de la solicitud
+              </label>
+
+              <input
+                id="request-title"
+                type="text"
+                name="title"
+                value={form.title}
+                onChange={handleChange}
+                placeholder="Ej.: Reparación de luminaria"
+                maxLength={120}
+                required
               />
 
             </div>

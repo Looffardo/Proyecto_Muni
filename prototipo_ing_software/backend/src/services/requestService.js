@@ -57,6 +57,7 @@ async function geocodeLocation(location) {
 }
 
 export function validateRequestBody(body = {}) {
+  const title = sanitizeText(body.title);
   const description = sanitizeText(body.description);
   const type = sanitizeText(body.type);
   const location = sanitizeText(body.location);
@@ -67,6 +68,10 @@ export function validateRequestBody(body = {}) {
   const macroSector = sanitizeText(body.macroSector);
   const source = sanitizeText(body.source);
   const mayorCommitment = Boolean(body.mayorCommitment);
+
+  if (!title || title.length < 3 || title.length > 120) {
+    throw Object.assign(new Error("El título debe tener entre 3 y 120 caracteres."), { status: 400 });
+  }
 
   if (!description || description.length > 2000) {
     throw Object.assign(new Error("La descripción debe tener menos de 2000 caracteres."), { status: 400 });
@@ -85,6 +90,7 @@ export function validateRequestBody(body = {}) {
   }
 
   return {
+    title,
     description,
     type,
     location,

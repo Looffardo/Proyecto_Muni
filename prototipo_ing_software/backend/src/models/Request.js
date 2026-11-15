@@ -2,6 +2,12 @@ import mongoose from "mongoose";
 
 const requestSchema = new mongoose.Schema(
   {
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 120,
+    },
     description: {
       type: String,
       required: true,
