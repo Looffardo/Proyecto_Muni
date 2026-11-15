@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { createRequest } from "../api/requestsApi";
 import Navbar from "../components/navigation/Navbar";
 import Footer from "../components/navigation/Footer";
 
@@ -52,6 +53,9 @@ export default function CreateRequest() {
   });
 
   const [photo, setPhoto] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const today = new Date().toLocaleDateString("es-CL");
 
@@ -94,11 +98,43 @@ export default function CreateRequest() {
     }
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
-    // Pendiente:
-    // Enviar los datos al backend cuando esté disponible.
+    setError("");
+    setSuccess("");
+
+    if (!form.description || !form.type || !form.location || !form.area || !form.priority) {
+      setError("Completa los campos obligatorios antes de enviar la solicitud.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const payload = {
+        description: form.description,
+        type: form.type,
+        location: form.location,
+        area: form.area,
+        mayorCommitment: Boolean(form.mayorCommitment),
+        priority: Number(form.priority),
+        manager: form.manager,
+        organization: form.organization,
+        macroSector: form.macroSector,
+        source: form.source,
+        photoUrl: photo ? photo.name : "",
+      };
+
+      const response = await createRequest(payload);
+
+      setSuccess(`Solicitud publicada correctamente. ID: ${response.request?._id || "generado"}`);
+      handleClear();
+    } catch (submitError) {
+      setError(submitError.message || "No se pudo publicar la solicitud.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -214,7 +250,7 @@ export default function CreateRequest() {
                 name="location"
                 value={form.location}
                 onChange={handleChange}
-                placeholder="Ej.: Calle 403 con 402, Peñalolén"
+                placeholder="Ej.: Av. Diagonal Las Torres 2000, Peñalolén"
                 required
               />
 
@@ -427,6 +463,14 @@ export default function CreateRequest() {
                 ACCIONES
             ===================================== */}
 
+            {error && (
+              <p className="request-form-error">{error}</p>
+            )}
+
+            {success && (
+              <p className="request-form-success">{success}</p>
+            )}
+
             <div className="request-form-actions">
 
               <button
@@ -440,18 +484,12 @@ export default function CreateRequest() {
               <button
                 type="submit"
                 className="request-submit-button"
-                disabled
-                title="Disponible al conectar el backend"
+                disabled={isSubmitting}
               >
-                Publicar solicitud
+                {isSubmitting ? "Publicando..." : "Publicar solicitud"}
               </button>
 
             </div>
-
-            <p className="request-form-note">
-              La publicación estará disponible cuando
-              el formulario se conecte con el backend.
-            </p>
 
           </form>
 
