@@ -1,8 +1,8 @@
 import { useState } from "react";
 
+import { createRequest } from "../api/requestsApi";
 import Navbar from "../components/navigation/Navbar";
 import Footer from "../components/navigation/Footer";
-import { createRequest } from "../api/requestsApi";
 
 import "../styles/create-request.css";
 
@@ -31,10 +31,8 @@ const TIPOS = [
 
 const FUENTES = [
   "Terreno",
-  "Caminatas Nocturnas",
   "Red social",
   "Reunión",
-  "Audiencias",
   "Solicitud Concejal",
   "Correo",
   "Otro",
@@ -42,6 +40,7 @@ const FUENTES = [
 
 export default function CreateRequest() {
   const [form, setForm] = useState({
+    title: "",
     description: "",
     type: "",
     location: "",
@@ -55,9 +54,9 @@ export default function CreateRequest() {
   });
 
   const [photo, setPhoto] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [createdId, setCreatedId] = useState("");
+  const [success, setSuccess] = useState("");
 
   const today = new Date().toLocaleDateString("es-CL");
 
@@ -78,6 +77,7 @@ export default function CreateRequest() {
 
   function handleClear() {
     setForm({
+      title: "",
       description: "",
       type: "",
       location: "",
@@ -91,8 +91,6 @@ export default function CreateRequest() {
     });
 
     setPhoto(null);
-    setError("");
-    setCreatedId("");
 
     const photoInput =
       document.getElementById("request-photo");
@@ -105,19 +103,40 @@ export default function CreateRequest() {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    setSubmitting(true);
     setError("");
-    setCreatedId("");
+    setSuccess("");
+
+    if (!form.title || !form.description || !form.type || !form.location || !form.area || !form.priority) {
+      setError("Completa los campos obligatorios antes de enviar la solicitud.");
+      return;
+    }
+
+    setIsSubmitting(true);
 
     try {
-      const { request } = await createRequest(form);
+      const payload = {
+        title: form.title,
+        description: form.description,
+        type: form.type,
+        location: form.location,
+        area: form.area,
+        mayorCommitment: Boolean(form.mayorCommitment),
+        priority: Number(form.priority),
+        manager: form.manager,
+        organization: form.organization,
+        macroSector: form.macroSector,
+        source: form.source,
+        photoUrl: photo ? photo.name : "",
+      };
 
+      const response = await createRequest(payload);
+
+      setSuccess(`Solicitud publicada correctamente. ID: ${response.request?.code ?? "generado"}`);
       handleClear();
-      setCreatedId(request.id);
     } catch (submitError) {
-      setError(submitError.message);
+      setError(submitError.message || "No se pudo publicar la solicitud.");
     } finally {
-      setSubmitting(false);
+      setIsSubmitting(false);
     }
   }
 
@@ -179,6 +198,25 @@ export default function CreateRequest() {
 
             <div className="request-field">
 
+              <label htmlFor="request-title">
+                Título de la solicitud
+              </label>
+
+              <input
+                id="request-title"
+                type="text"
+                name="title"
+                value={form.title}
+                onChange={handleChange}
+                placeholder="Ej.: Reparación de luminaria"
+                maxLength={120}
+                required
+              />
+
+            </div>
+
+            <div className="request-field">
+
               <label htmlFor="request-description">
                 Producto / Solicitud
               </label>
@@ -234,7 +272,7 @@ export default function CreateRequest() {
                 name="location"
                 value={form.location}
                 onChange={handleChange}
-                placeholder="Ej.: Calle 403 con 402, Peñalolén"
+                placeholder="Ej.: Av. Diagonal Las Torres 2000, Peñalolén"
                 required
               />
 
@@ -395,7 +433,6 @@ export default function CreateRequest() {
               <select
                 id="request-source"
                 name="source"
-                required
                 value={form.source}
                 onChange={handleChange}
               >
@@ -448,6 +485,14 @@ export default function CreateRequest() {
                 ACCIONES
             ===================================== */}
 
+            {error && (
+              <p className="request-form-error">{error}</p>
+            )}
+
+            {success && (
+              <p className="request-form-success">{success}</p>
+            )}
+
             <div className="request-form-actions">
 
               <button
@@ -461,30 +506,12 @@ export default function CreateRequest() {
               <button
                 type="submit"
                 className="request-submit-button"
-                disabled={submitting}
-                aria-busy={submitting}
+                disabled={isSubmitting}
               >
-                {submitting ? "Publicando…" : "Publicar solicitud"}
+                {isSubmitting ? "Publicando..." : "Publicar solicitud"}
               </button>
 
             </div>
-
-            <p className="request-form-note">
-              La fotografía todavía no se guarda
-              junto con la solicitud.
-            </p>
-
-            {error && (
-              <p className="request-form-note" role="alert">
-                {error}
-              </p>
-            )}
-
-            {createdId && (
-              <p className="request-form-note" role="status">
-                Solicitud publicada con el ID {createdId}.
-              </p>
-            )}
 
           </form>
 

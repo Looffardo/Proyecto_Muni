@@ -3,7 +3,9 @@ import MongoStore from "connect-mongo";
 import mongoose from "mongoose";
 
 import connectDB from "./src/config/db.js";
+import Request from "./src/models/Request.js";
 import User from "./src/models/User.js";
+import { initializeRequestCodes } from "./src/services/requestService.js";
 import createApp from "./src/app.js";
 
 try {
@@ -18,6 +20,8 @@ try {
 
   await connectDB();
   await User.init();
+  await initializeRequestCodes();
+  await Request.collection.createIndex({ code: 1 }, { unique: true });
 
   const store = MongoStore.create({
     client: mongoose.connection.getClient(),

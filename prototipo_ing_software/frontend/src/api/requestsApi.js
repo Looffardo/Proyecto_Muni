@@ -1,18 +1,15 @@
-async function requestsRequest(path, body) {
+export async function createRequest(payload) {
   let response;
 
   try {
-    response = await fetch(`/api/requests${path}`, {
-      method: body === undefined ? "GET" : "POST",
+    response = await fetch("/api/requests", {
+      method: "POST",
       credentials: "same-origin",
-      headers:
-        body === undefined
-          ? {}
-          : {
-              "Content-Type": "application/json",
-              "X-Requested-With": "muni-web",
-            },
-      body: body === undefined ? undefined : JSON.stringify(body),
+      headers: {
+        "Content-Type": "application/json",
+        "X-Requested-With": "muni-web",
+      },
+      body: JSON.stringify(payload),
     });
   } catch {
     throw new Error("No se pudo conectar al servidor.");
@@ -24,7 +21,7 @@ async function requestsRequest(path, body) {
     throw Object.assign(
       new Error(
         data.message ||
-          "No se pudo completar la solicitud. Comprueba que el backend esté iniciado."
+          "No se pudo publicar la solicitud. Revisa el backend."
       ),
       { status: response.status }
     );
@@ -33,10 +30,31 @@ async function requestsRequest(path, body) {
   return data;
 }
 
-export function listRequests() {
-  return requestsRequest("");
-}
+export async function getRequests() {
+  let response;
 
-export function createRequest(request) {
-  return requestsRequest("", request);
+  try {
+    response = await fetch("/api/requests", {
+      method: "GET",
+      credentials: "same-origin",
+      headers: {
+        "X-Requested-With": "muni-web",
+      },
+    });
+  } catch {
+    throw new Error("No se pudo conectar al servidor.");
+  }
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw Object.assign(
+      new Error(
+        data.message || "No se pudieron cargar las solicitudes."
+      ),
+      { status: response.status }
+    );
+  }
+
+  return data.requests || [];
 }

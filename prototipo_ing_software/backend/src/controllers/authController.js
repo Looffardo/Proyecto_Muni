@@ -22,7 +22,7 @@ async function startSession(req, user) {
   });
 }
 
-// Registro de vecinos
+// Registro
 
 export async function register(req, res) {
   const user = await registerUser(req.body);

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
+import { getRequests } from "../api/requestsApi";
 import useAuth from "../hooks/useAuth";
 import Navbar from "../components/navigation/Navbar";
 import Footer from "../components/navigation/Footer";
-import { listRequests } from "../api/requestsApi";
 
 import "../styles/manage-requests.css";
 import "../styles/request-tracking.css";
@@ -12,10 +12,8 @@ import "../styles/request-tracking.css";
 const ESTADOS = [
   "No iniciado",
   "En diseño",
-  "En implementación",
   "Terminado",
   "Infactible",
-  "No pertenece a unidad",
 ];
 
 const AREAS = [
@@ -39,55 +37,12 @@ const PRIORIDADES = {
   3: "Alta",
 };
 
-const ESTADO_A_STATUS = {
-  "No iniciado": "Pendiente",
-  "En diseño": "En proceso",
-  "En implementación": "En proceso",
-  Terminado: "Resuelta",
-  Infactible: "Infactible",
-  "No pertenece a unidad": "No pertenece a unidad",
-};
-
-const CLASE_STATUS = {
-  Pendiente: "status-pending",
-  "En proceso": "status-progress",
-  Resuelta: "status-resolved",
-  Infactible: "status-infeasible",
-  "No pertenece a unidad": "status-other",
-};
-
-// Convierte una solicitud del backend al formato que usan las tarjetas.
-function adaptRequest(request) {
-  const cabinetStatus = request.cabinetStatus || "No iniciado";
-
-  return {
-    // El seguimiento está fuera del alcance: el backend no tiene estos campos.
-    reportedStatus: cabinetStatus,
-    directionReport: "",
-    directionComment: "",
-    cabinetComment: "",
-    managerComment: "",
-    url: "",
-    history: [],
-
-    ...request,
-
-    cabinetStatus,
-    title:
-      request.type && request.location
-        ? `${request.type} – ${request.location}`
-        : (request.description || "").slice(0, 60),
-    status: ESTADO_A_STATUS[cabinetStatus] || "Pendiente",
-    date: new Date(request.createdAt).toLocaleDateString("es-CL", {
-      timeZone: "America/Santiago",
-    }),
-  };
-}
-
 function TrackingField({
   label,
   name,
   value,
+  onChange,
+  disabled,
   placeholder,
 }) {
   return (
@@ -98,7 +53,8 @@ function TrackingField({
         id={name}
         name={name}
         value={value}
-        disabled
+        onChange={onChange}
+        disabled={disabled}
         placeholder={placeholder}
         rows={3}
       />
@@ -106,9 +62,60 @@ function TrackingField({
   );
 }
 
-function RequestDetail({ request }) {
+function RequestDetail({
+  request,
+  isGescom,
+  user,
+  onSave,
+}) {
+  const requestId = request._id || request.id || "unknown";
+  const requestCode = request.code ?? requestId;
+  const safeHistory = Array.isArray(request.history) ? request.history : [];
+
+  const [draft, setDraft] = useState({
+    cabinetStatus: request.cabinetStatus || "No iniciado",
+    reportedStatus: request.reportedStatus || "No iniciado",
+    directionReport: request.directionReport || "",
+    directionComment: request.directionComment || "",
+    cabinetComment: request.cabinetComment || "",
+    managerComment: request.managerComment || "",
+    url: request.url || "",
+  });
+
+  const [savedMessage, setSavedMessage] = useState("");
+
+  const canEditDirection =
+    !isGescom && user?.role === request.area;
+
+  const canEditCabinet = isGescom;
+
+  // Permiso provisional para comentarios del gestor.
+  const canEditManager = isGescom;
+
   const matchingStates =
-    request.cabinetStatus === request.reportedStatus;
+    draft.cabinetStatus === draft.reportedStatus;
+
+  function change(event) {
+    const { name, value } = event.target;
+
+    setDraft((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+
+    setSavedMessage("");
+  }
+
+  function saveDemo() {
+    onSave(requestId, draft, user?.name || "Funcionario");
+
+    setSavedMessage(
+      "Cambios aplicados en esta vista de prueba. No se guardaron en MongoDB."
+    );
+  }
+
+  const canEdit =
+    canEditDirection || canEditCabinet || canEditManager;
 
   return (
     <div className="request-expanded">
@@ -122,57 +129,32 @@ function RequestDetail({ request }) {
 
           <div>
             <span>ID de solicitud</span>
-            <strong>{request.id}</strong>
+            <strong>{requestId}</strong>
           </div>
 
           <div>
             <span>Área responsable</span>
-            <strong>{request.area}</strong>
+            <strong>{request.area || "Sin área"}</strong>
           </div>
 
           <div>
             <span>Prioridad</span>
-            <strong>{PRIORIDADES[request.priority]}</strong>
+            <strong>{PRIORIDADES[request.priority] || "Sin prioridad"}</strong>
           </div>
 
           <div>
             <span>Fecha de registro</span>
-            <strong>{request.date}</strong>
+            <strong>
+              {request.date ||
+                (request.createdAt
+                  ? new Date(request.createdAt).toLocaleDateString("es-CL")
+                  : "Sin fecha")}
+            </strong>
           </div>
 
           <div>
             <span>Ubicación</span>
-            <strong>{request.location}</strong>
-          </div>
-
-          <div>
-            <span>Tipo de solicitud</span>
-            <strong>{request.type}</strong>
-          </div>
-
-          <div>
-            <span>Fuente</span>
-            <strong>{request.source || "No informado"}</strong>
-          </div>
-
-          <div>
-            <span>Compromiso del alcalde</span>
-            <strong>{request.mayorCommitment ? "Sí" : "No"}</strong>
-          </div>
-
-          <div>
-            <span>Gestor responsable</span>
-            <strong>{request.manager || "No informado"}</strong>
-          </div>
-
-          <div>
-            <span>Organización o persona comprometida</span>
-            <strong>{request.organization || "No informado"}</strong>
-          </div>
-
-          <div>
-            <span>Macrosector</span>
-            <strong>{request.macroSector || "No informado"}</strong>
+            <strong>{request.location || "Sin ubicación"}</strong>
           </div>
 
         </div>
@@ -187,21 +169,22 @@ function RequestDetail({ request }) {
       {/* ESTADOS */}
       <section className="tracking-section">
 
-        <h3>2. Estado y seguimiento <span className="tracking-soon">Próximamente</span></h3>
+        <h3>2. Estado y seguimiento</h3>
 
         <div className="tracking-status-grid">
 
           <div className="tracking-field">
 
-            <label htmlFor={`cabinet-${request.id}`}>
+            <label htmlFor={`cabinet-${requestId}`}>
               Estado Gabinete
             </label>
 
             <select
-              id={`cabinet-${request.id}`}
+              id={`cabinet-${requestId}`}
               name="cabinetStatus"
-              value={request.cabinetStatus}
-              disabled
+              value={draft.cabinetStatus}
+              onChange={change}
+              disabled={!canEditCabinet}
             >
               {ESTADOS.map((estado) => (
                 <option key={estado} value={estado}>
@@ -218,15 +201,16 @@ function RequestDetail({ request }) {
 
           <div className="tracking-field">
 
-            <label htmlFor={`reported-${request.id}`}>
+            <label htmlFor={`reported-${requestId}`}>
               Estado Reportado
             </label>
 
             <select
-              id={`reported-${request.id}`}
+              id={`reported-${requestId}`}
               name="reportedStatus"
-              value={request.reportedStatus}
-              disabled
+              value={draft.reportedStatus}
+              onChange={change}
+              disabled={!canEditDirection}
             >
               {ESTADOS.map((estado) => (
                 <option key={estado} value={estado}>
@@ -266,35 +250,43 @@ function RequestDetail({ request }) {
       {/* COMENTARIOS */}
       <section className="tracking-section">
 
-        <h3>3. Comentarios de seguimiento <span className="tracking-soon">Próximamente</span></h3>
+        <h3>3. Comentarios de seguimiento</h3>
 
         <div className="tracking-comments">
 
           <TrackingField
             label="Comentario reportado por la dirección"
             name="directionReport"
-            value={request.directionReport}
+            value={draft.directionReport}
+            onChange={change}
+            disabled={!canEditDirection}
             placeholder="Justificación del estado reportado..."
           />
 
           <TrackingField
             label="Comentario de la dirección"
             name="directionComment"
-            value={request.directionComment}
+            value={draft.directionComment}
+            onChange={change}
+            disabled={!canEditDirection}
             placeholder="Acciones realizadas por el área..."
           />
 
           <TrackingField
             label="Comentario del gabinete"
             name="cabinetComment"
-            value={request.cabinetComment}
+            value={draft.cabinetComment}
+            onChange={change}
+            disabled={!canEditCabinet}
             placeholder="Observaciones internas de GESCOM..."
           />
 
           <TrackingField
             label="Comentario del gestor"
             name="managerComment"
-            value={request.managerComment}
+            value={draft.managerComment}
+            onChange={change}
+            disabled={!canEditManager}
             placeholder="Observaciones del seguimiento..."
           />
 
@@ -305,28 +297,29 @@ function RequestDetail({ request }) {
       {/* RESPALDO */}
       <section className="tracking-section">
 
-        <h3>4. Documentos de respaldo <span className="tracking-soon">Próximamente</span></h3>
+        <h3>4. Documentos de respaldo</h3>
 
         <div className="tracking-field">
 
-          <label htmlFor={`url-${request.id}`}>
+          <label htmlFor={`url-${requestId}`}>
             URL de respaldo
           </label>
 
           <input
-            id={`url-${request.id}`}
+            id={`url-${requestId}`}
             type="url"
             name="url"
-            value={request.url}
-            disabled
+            value={draft.url}
+            onChange={change}
+            disabled={!canEdit}
             placeholder="https://..."
           />
 
         </div>
 
-        {request.url.startsWith("https://") && (
+        {typeof draft.url === "string" && draft.url.startsWith("https://") && (
           <a
-            href={request.url}
+            href={draft.url}
             target="_blank"
             rel="noopener noreferrer"
             className="tracking-document-link"
@@ -337,35 +330,44 @@ function RequestDetail({ request }) {
 
       </section>
 
-      {/* El guardado no está conectado al backend. */}
-      <div className="tracking-actions">
+      {/* GUARDAR DEMOSTRACIÓN */}
+      {canEdit && (
+        <div className="tracking-actions">
 
-        <button
-          type="button"
-          className="tracking-save-button"
-          disabled
-        >
-          Guardar (Próximamente)
-        </button>
+          <button
+            type="button"
+            onClick={saveDemo}
+            className="tracking-save-button"
+          >
+            Aplicar cambios de prueba
+          </button>
 
-      </div>
+        </div>
+      )}
+
+      {savedMessage && (
+        <p className="tracking-save-message" role="status">
+          {savedMessage}
+        </p>
+      )}
 
       {/* HISTORIAL */}
       <section className="tracking-section">
 
-        <h3>5. Historial de seguimiento <span className="tracking-soon">Próximamente</span></h3>
+        <h3>5. Historial de seguimiento</h3>
 
-        {request.history.length === 0 ? (
+        {safeHistory.length === 0 ? (
 
           <div className="tracking-history-empty">
-            Todavía no hay actualizaciones registradas.
+            Todavía no hay actualizaciones registradas
+            para esta solicitud.
           </div>
 
         ) : (
 
           <div className="tracking-history">
 
-            {[...request.history].reverse().map((entry) => (
+            {[...safeHistory].reverse().map((entry) => (
 
               <article
                 className="tracking-history-item"
@@ -413,28 +415,20 @@ export default function MyRequests() {
   const [expandedId, setExpandedId] = useState(null);
 
   useEffect(() => {
-    let active = true;
+    async function loadRequests() {
+      try {
+        setLoading(true);
+        setLoadError("");
+        const data = await getRequests();
+        setRequests(data);
+      } catch (error) {
+        setLoadError(error.message || "No se pudieron cargar las solicitudes.");
+      } finally {
+        setLoading(false);
+      }
+    }
 
-    listRequests()
-      .then((data) => {
-        if (active) {
-          setRequests(data.requests.map(adaptRequest));
-        }
-      })
-      .catch((error) => {
-        if (active) {
-          setLoadError(error.message);
-        }
-      })
-      .finally(() => {
-        if (active) {
-          setLoading(false);
-        }
-      });
-
-    return () => {
-      active = false;
-    };
+    loadRequests();
   }, []);
 
   const isGescom =
@@ -457,23 +451,68 @@ export default function MyRequests() {
     setExpandedId(null);
   }
 
+  // Guardado local, únicamente durante la demostración.
+  function saveChanges(id, changes, author) {
+    setRequests((previous) =>
+      previous.map((request) => {
+        const currentId = request._id || request.id;
+
+        if (currentId !== id) {
+          return request;
+        }
+
+        const modifiedFields = Object.keys(changes).filter(
+          (key) => changes[key] !== request[key]
+        );
+
+        if (modifiedFields.length === 0) {
+          return request;
+        }
+
+        const entry = {
+          id: crypto.randomUUID(),
+          author,
+          date: new Date().toLocaleString("es-CL"),
+          description:
+            "Actualización de seguimiento: " +
+            modifiedFields.join(", ") +
+            ".",
+        };
+
+        const history = Array.isArray(request.history) ? request.history : [];
+
+        return {
+          ...request,
+          ...changes,
+          history: [...history, entry],
+        };
+      })
+    );
+  }
+
   const filteredRequests = requests.filter((request) => {
     const query = search.trim().toLowerCase();
+    const idValue = String(request._id || request.id || "");
+    const titleValue = String(request.title || "");
+    const descriptionValue = String(request.description || "");
+    const areaValue = String(request.area || "");
+    const statusValue = String(request.status || "");
+    const priorityValue = Number(request.priority ?? 0);
 
     const matchesSearch =
-      request.id.toLowerCase().includes(query) ||
-      request.title.toLowerCase().includes(query) ||
-      request.description.toLowerCase().includes(query);
+      idValue.toLowerCase().includes(query) ||
+      titleValue.toLowerCase().includes(query) ||
+      descriptionValue.toLowerCase().includes(query);
 
     const matchesStatus =
-      !status || request.status === status;
+      !status || statusValue === status;
 
     const matchesArea =
-      !area || request.area === area;
+      !area || areaValue === area;
 
     const matchesPriority =
       priority === "" ||
-      request.priority === Number(priority);
+      priorityValue === Number(priority);
 
     return (
       matchesSearch &&
@@ -528,8 +567,6 @@ export default function MyRequests() {
             <option value="Pendiente">Pendiente</option>
             <option value="En proceso">En proceso</option>
             <option value="Resuelta">Resuelta</option>
-            <option value="Infactible">Infactible</option>
-            <option value="No pertenece a unidad">No pertenece a unidad</option>
           </select>
 
           {isGescom && (
@@ -570,29 +607,23 @@ export default function MyRequests() {
 
         </section>
 
-        {!loading && !loadError && (
-          <div className="requests-results">
-            {filteredRequests.length} solicitudes encontradas
+        <div className="requests-results">
+          {loading
+            ? "Cargando solicitudes..."
+            : `${filteredRequests.length} solicitudes encontradas`}
+        </div>
+
+        {loadError && (
+          <div className="requests-empty">
+            <h2>Error al cargar solicitudes</h2>
+            <p>{loadError}</p>
           </div>
         )}
 
         {/* SOLICITUDES */}
         <section className="requests-list">
 
-          {loading ? (
-
-            <div className="requests-empty" role="status">
-              <p>Cargando solicitudes…</p>
-            </div>
-
-          ) : loadError ? (
-
-            <div className="requests-empty" role="alert">
-              <h2>No se pudieron cargar las solicitudes</h2>
-              <p>{loadError}</p>
-            </div>
-
-          ) : filteredRequests.length === 0 ? (
+          {!loading && filteredRequests.length === 0 ? (
 
             <div className="requests-empty">
 
@@ -607,12 +638,19 @@ export default function MyRequests() {
 
           ) : (
 
-            filteredRequests.map((request) => (
+            filteredRequests.map((request) => {
+              const id = String(request._id || request.id || "");
+              const title = request.title || "Solicitud sin título";
+              const area = request.area || "Sin área";
+              const status = request.status || "Pendiente";
+              const description = request.description || "Sin descripción.";
+              const priority = Number(request.priority ?? 0);
 
-              <article
-                className="request-item"
-                key={request.id}
-              >
+              return (
+                <article
+                  className="request-item"
+                  key={id}
+                >
 
                 <div className="request-item-main">
 
@@ -620,26 +658,30 @@ export default function MyRequests() {
 
                     <div className="request-item-heading">
 
-                      <h2>{request.title}</h2>
+                      <h2>{title}</h2>
 
                       <span
-                        className={`request-status ${CLASE_STATUS[request.status]}`}
+                        className={`request-status ${
+                          status === "Pendiente"
+                            ? "status-pending"
+                            : status === "En proceso"
+                              ? "status-progress"
+                              : "status-resolved"
+                        }`}
                       >
-                        {request.status}
+                        {status}
                       </span>
 
                     </div>
 
                     <p className="request-item-meta">
-                      {request.area}
+                      {area}
                       {" · "}
-                      Prioridad {
-                        PRIORIDADES[request.priority]
-                      }
+                      Prioridad {PRIORIDADES[priority] || "Sin prioridad"}
                     </p>
 
                     <p className="request-item-description">
-                      {request.description}
+                      {description}
                     </p>
 
                   </div>
@@ -647,38 +689,53 @@ export default function MyRequests() {
                   <button
                     type="button"
                     className="request-details-button"
-                    aria-expanded={expandedId === request.id}
+                    aria-expanded={expandedId === id}
                     onClick={() =>
                       setExpandedId(
-                        expandedId === request.id
-                          ? null
-                          : request.id
+                        expandedId === id ? null : id
                       )
                     }
                   >
-                    {expandedId === request.id
+                    {expandedId === id
                       ? "Ocultar detalle"
                       : "Ver detalle"}
                   </button>
 
                 </div>
 
-                {expandedId === request.id && (
+                {expandedId === id && (
 
                   <RequestDetail
-                    key={request.id}
-                    request={request}
+                    key={id}
+                    request={{
+                      ...request,
+                      id,
+                      title,
+                      area,
+                      status,
+                      description,
+                      priority,
+                    }}
+                    isGescom={isGescom}
+                    user={user}
+                    onSave={saveChanges}
                   />
 
                 )}
 
               </article>
-
-            ))
+              );
+            })
 
           )}
 
         </section>
+
+        {!loading && !loadError && (
+          <p className="request-demo-disclaimer">
+            Mostrando solicitudes
+          </p>
+        )}
 
       </main>
 

@@ -1,13 +1,14 @@
 import mongoose from "mongoose";
 
-// Correlativo por prefijo. El _id es el prefijo de la fuente (T, CN, R...).
-
-const counterSchema = new mongoose.Schema(
-  {
-    _id: { type: String, required: true },
-    seq: { type: Number, required: true },
+const counterSchema = new mongoose.Schema({
+  _id: {
+    type: String,
+    required: true,
   },
-  { versionKey: false }
-);
+  sequence: {
+    type: Number,
+    required: true,
+  },
+});
 
 export default mongoose.model("Counter", counterSchema);

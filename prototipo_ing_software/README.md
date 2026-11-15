@@ -29,6 +29,23 @@ prototipo_capstone/ #Nota de Looff: Como que capstone?!? 0_o
 ```
 ## Cómo ejecutar el proyecto
 
+ANTES DE SUBIR CUALQUIER CAMBIO, EJECUTAR PRUEBAS UNITARIAS
+
+## Ejecutar pruebas
+
+Desde la carpeta `backend/`:
+
+```bash
+npm test
+```
+
+Desde la carpeta `frontend/`:
+
+```bash
+npm test
+```
+
+
 ### 1. Clonar el repositorio
 
 ```bash

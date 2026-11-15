@@ -1,63 +1,18 @@
 import mongoose from "mongoose";
 
-export const AREAS = [
-  "Tránsito",
-  "Espacios Públicos",
-  "Inspección",
-  "Seguridad Humana",
-  "Deportes",
-  "DIDECO",
-  "Jurídico",
-  "DOM",
-  "SECPLA",
-  "Delegación Peñalolén Alto",
-];
-
-export const TYPES = [
-  "Alumbrado Público",
-  "Vereda",
-  "Poda / Tala",
-  "Infraestructura",
-  "Seguridad",
-  "Espacios Públicos",
-  "Otro",
-];
-
-// Prefijo del ID legible según la fuente de la solicitud
-
-export const SOURCE_PREFIXES = {
-  Terreno: "T",
-  "Caminatas Nocturnas": "CN",
-  Reunión: "R",
-  Audiencias: "A",
-  Correo: "C",
-  "Solicitud Concejal": "I",
-  "Red social": "RRSS",
-  Otro: "O",
-};
-
-export const SOURCES = Object.keys(SOURCE_PREFIXES);
-
-export const CABINET_STATUSES = [
-  "No iniciado",
-  "En diseño",
-  "Terminado",
-  "Infactible",
-];
-
-// Límites aproximados de Peñalolén (los mismos que usa MapView)
-
-export const BOUNDS = {
-  lat: { min: -33.54, max: -33.43 },
-  lng: { min: -70.6, max: -70.47 },
-};
-
 const requestSchema = new mongoose.Schema(
   {
     code: {
+      type: Number,
+      required: true,
+      min: 1,
+      immutable: true,
+    },
+    title: {
       type: String,
       required: true,
-      unique: true,
+      trim: true,
+      maxlength: 120,
     },
     description: {
       type: String,
@@ -68,19 +23,18 @@ const requestSchema = new mongoose.Schema(
     type: {
       type: String,
       required: true,
-      enum: TYPES,
+      trim: true,
     },
     location: {
       type: String,
       required: true,
       trim: true,
-      maxlength: 200,
+      maxlength: 255,
     },
     area: {
       type: String,
       required: true,
-      enum: AREAS,
-      index: true,
+      trim: true,
     },
     mayorCommitment: {
       type: Boolean,
@@ -89,53 +43,55 @@ const requestSchema = new mongoose.Schema(
     priority: {
       type: Number,
       required: true,
-      enum: [0, 1, 2, 3],
+      min: 0,
+      max: 3,
     },
     manager: {
       type: String,
       trim: true,
-      maxlength: 120,
       default: "",
     },
     organization: {
       type: String,
       trim: true,
-      maxlength: 120,
       default: "",
     },
     macroSector: {
       type: String,
       trim: true,
-      maxlength: 120,
       default: "",
     },
     source: {
       type: String,
-      required: true,
-      enum: SOURCES,
+      trim: true,
+      default: "",
     },
-    lat: {
+    latitude: {
       type: Number,
-      min: BOUNDS.lat.min,
-      max: BOUNDS.lat.max,
+      default: null,
     },
-    lng: {
+    longitude: {
       type: Number,
-      min: BOUNDS.lng.min,
-      max: BOUNDS.lng.max,
+      default: null,
     },
-    cabinetStatus: {
+    photoUrl: {
       type: String,
-      enum: CABINET_STATUSES,
-      default: "No iniciado",
+      default: "",
+    },
+    status: {
+      type: String,
+      enum: ["Pendiente", "En proceso", "Resuelta"],
+      default: "Pendiente",
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      default: null,
     },
   },
-  { timestamps: true }
+  { timestamps: true, autoIndex: false }
 );
+
+requestSchema.index({ code: 1 }, { unique: true });
 
 export default mongoose.model("Request", requestSchema);
