@@ -4,7 +4,10 @@ import Counter from "../models/Counter.js";
 import Request from "../models/Request.js";
 import {
   createRequestEntry,
+  findRequestByCode,
+  getRequestsList,
   validateRequestBody,
+  visibilityFilter,
 } from "./requestService.js";
 
 const validRequest = {
@@ -99,5 +102,111 @@ test("asigna códigos consecutivos a solicitudes creadas concurrentemente", asyn
     Counter.findByIdAndUpdate = originalFindByIdAndUpdate;
     Request.create = originalCreate;
     globalThis.fetch = originalFetch;
+  }
+});
+
+test("rechaza área, tipo, fuente o prioridad fuera de la lista", () => {
+  assert.throws(
+    () => validateRequestBody({ ...validRequest, area: "Área inventada" }),
+    { message: "El área responsable no es válida.", status: 400 }
+  );
+  assert.throws(
+    () => validateRequestBody({ ...validRequest, type: "Otro tipo" }),
+    { message: "El tipo de solicitud no es válido.", status: 400 }
+  );
+  assert.throws(
+    () => validateRequestBody({ ...validRequest, source: "Fuente rara" }),
+    { message: "La fuente no es válida.", status: 400 }
+  );
+  assert.throws(
+    () => validateRequestBody({ ...validRequest, priority: "7" }),
+    { status: 400 }
+  );
+  assert.throws(
+    () => validateRequestBody({ ...validRequest, priority: undefined }),
+    { status: 400 }
+  );
+});
+
+test("la fuente es opcional", () => {
+  assert.equal(validateRequestBody({ ...validRequest, source: "" }).source, "");
+  assert.equal(
+    validateRequestBody({ ...validRequest, source: "Terreno" }).source,
+    "Terreno"
+  );
+});
+
+test("guarda quién creó la solicitud", async () => {
+  const originalFindByIdAndUpdate = Counter.findByIdAndUpdate;
+  const originalCreate = Request.create;
+  const originalFetch = globalThis.fetch;
+
+  Counter.findByIdAndUpdate = async () => ({ sequence: 1 });
+  Request.create = async (data) => data;
+  globalThis.fetch = async () => ({
+    ok: true,
+    json: async () => [{ lat: "-33.45", lon: "-70.55" }],
+  });
+
+  try {
+    const created = await createRequestEntry(validRequest, {
+      _id: "usuario-gescom",
+      role: "GESCOM",
+    });
+
+    assert.equal(created.createdBy, "usuario-gescom");
+  } finally {
+    Counter.findByIdAndUpdate = originalFindByIdAndUpdate;
+    Request.create = originalCreate;
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("GESCOM ve todo y cada área solo lo suyo", () => {
+  assert.deepEqual(visibilityFilter({ role: "GESCOM" }), {});
+  assert.deepEqual(visibilityFilter({ role: "Tránsito" }), { area: "Tránsito" });
+  assert.equal(visibilityFilter({}), null);
+  assert.equal(visibilityFilter(null), null);
+});
+
+test("filtra la lista en la consulta a MongoDB", async () => {
+  const originalFind = Request.find;
+  let capturedFilter;
+
+  Request.find = (filter) => {
+    capturedFilter = filter;
+    return { sort: async () => [] };
+  };
+
+  try {
+    await getRequestsList({ role: "DOM" });
+    assert.deepEqual(capturedFilter, { area: "DOM" });
+
+    capturedFilter = undefined;
+    assert.deepEqual(await getRequestsList({}), []);
+    assert.equal(capturedFilter, undefined);
+  } finally {
+    Request.find = originalFind;
+  }
+});
+
+test("busca por código respetando el área del usuario", async () => {
+  const originalFindOne = Request.findOne;
+  let capturedFilter;
+
+  Request.findOne = async (filter) => {
+    capturedFilter = filter;
+    return null;
+  };
+
+  try {
+    await findRequestByCode("5", { role: "DOM" });
+    assert.deepEqual(capturedFilter, { area: "DOM", code: 5 });
+
+    capturedFilter = undefined;
+    assert.equal(await findRequestByCode("abc", { role: "GESCOM" }), null);
+    assert.equal(capturedFilter, undefined);
+  } finally {
+    Request.findOne = originalFindOne;
   }
 });

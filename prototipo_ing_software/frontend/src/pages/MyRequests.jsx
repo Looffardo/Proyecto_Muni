@@ -129,7 +129,12 @@ function RequestDetail({
 
           <div>
             <span>ID de solicitud</span>
-            <strong>{requestId}</strong>
+            <strong>{requestCode}</strong>
+          </div>
+
+          <div>
+            <span>Título</span>
+            <strong>{request.title}</strong>
           </div>
 
           <div>
@@ -155,6 +160,36 @@ function RequestDetail({
           <div>
             <span>Ubicación</span>
             <strong>{request.location || "Sin ubicación"}</strong>
+          </div>
+
+          <div>
+            <span>Tipo de solicitud</span>
+            <strong>{request.type || "No informado"}</strong>
+          </div>
+
+          <div>
+            <span>Fuente</span>
+            <strong>{request.source || "No informado"}</strong>
+          </div>
+
+          <div>
+            <span>Compromiso del alcalde</span>
+            <strong>{request.mayorCommitment ? "Sí" : "No"}</strong>
+          </div>
+
+          <div>
+            <span>Gestor responsable</span>
+            <strong>{request.manager || "No informado"}</strong>
+          </div>
+
+          <div>
+            <span>Organización o persona comprometida</span>
+            <strong>{request.organization || "No informado"}</strong>
+          </div>
+
+          <div>
+            <span>Macrosector</span>
+            <strong>{request.macroSector || "No informado"}</strong>
           </div>
 
         </div>
@@ -499,7 +534,10 @@ export default function MyRequests() {
     const statusValue = String(request.status || "");
     const priorityValue = Number(request.priority ?? 0);
 
+    const codeValue = String(request.code ?? "");
+
     const matchesSearch =
+      codeValue.includes(query) ||
       idValue.toLowerCase().includes(query) ||
       titleValue.toLowerCase().includes(query) ||
       descriptionValue.toLowerCase().includes(query);

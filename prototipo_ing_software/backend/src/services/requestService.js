@@ -1,5 +1,19 @@
 import Request from "../models/Request.js";
 import Counter from "../models/Counter.js";
+import { AREAS, SOURCES, TYPES } from "../constants/requestOptions.js";
+
+export function isGescom(user) {
+  return String(user?.role || "").trim().toUpperCase() === "GESCOM";
+}
+
+// GESCOM ve todas las solicitudes; cada área, solo las suyas.
+// Devuelve null si el usuario no tiene un rol con acceso.
+
+export function visibilityFilter(user) {
+  if (isGescom(user)) return {};
+  if (!user?.role) return null;
+  return { area: user.role };
+}
 
 async function getNextRequestCode() {
   const counter = await Counter.findByIdAndUpdate(
@@ -125,12 +139,29 @@ export function validateRequestBody(body = {}) {
     throw Object.assign(new Error("Debes seleccionar un tipo de solicitud."), { status: 400 });
   }
 
+  if (!TYPES.includes(type)) {
+    throw Object.assign(new Error("El tipo de solicitud no es válido."), { status: 400 });
+  }
+
   if (!location) {
     throw Object.assign(new Error("La ubicación es obligatoria."), { status: 400 });
   }
 
   if (!area) {
     throw Object.assign(new Error("Debes seleccionar un área responsable."), { status: 400 });
+  }
+
+  if (!AREAS.includes(area)) {
+    throw Object.assign(new Error("El área responsable no es válida."), { status: 400 });
+  }
+
+  if (!Number.isInteger(priorityValue) || priorityValue < 0 || priorityValue > 3) {
+    throw Object.assign(new Error("Debes seleccionar una prioridad entre 0 y 3."), { status: 400 });
+  }
+
+  // La fuente es opcional, pero si viene debe ser una de la lista
+  if (source && !SOURCES.includes(source)) {
+    throw Object.assign(new Error("La fuente no es válida."), { status: 400 });
   }
 
   return {
@@ -148,7 +179,7 @@ export function validateRequestBody(body = {}) {
   };
 }
 
-export async function createRequestEntry(body) {
+export async function createRequestEntry(body, user) {
   const requestData = validateRequestBody(body);
   const coordinates = await geocodeLocation(requestData.location);
   const code = await getNextRequestCode();
@@ -157,9 +188,26 @@ export async function createRequestEntry(body) {
     ...requestData,
     ...coordinates,
     code,
+    createdBy: user?._id ?? null,
   });
 }
 
-export async function getRequestsList() {
-  return Request.find({}).sort({ createdAt: -1 });
+// El filtro por área se aplica en la consulta, no después en memoria
+
+export async function getRequestsList(user) {
+  const filter = visibilityFilter(user);
+  if (!filter) return [];
+
+  return Request.find(filter).sort({ createdAt: -1 });
+}
+
+// Busca por el ID legible (code). Si es de otra área, responde como si no existiera.
+
+export async function findRequestByCode(codeParam, user) {
+  const code = Number(codeParam);
+  const filter = visibilityFilter(user);
+
+  if (!Number.isInteger(code) || code < 1 || !filter) return null;
+
+  return Request.findOne({ ...filter, code });
 }
